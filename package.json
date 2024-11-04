@@ -1,0 +1,14 @@
+{
+  "name": "biskuvi",
+  "module": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./src/main.ts --outdir ./scripts --watch"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.12"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
