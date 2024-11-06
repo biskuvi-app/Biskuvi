@@ -6,9 +6,7 @@ export async function getEmbed(atUri: string): Promise<JSON> {
   let resolveHandleUrl = Url.getEmbed(atUri);
   try {
     log(resolveHandleUrl);
-    const response = await fetch(resolveHandleUrl, {
-      mode: "no-cors",
-    });
+    const response = await fetch(resolveHandleUrl);
     if (!response.ok) {
       throw `response: ${response.status}`;
     }

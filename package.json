@@ -3,7 +3,11 @@
   "module": "src/main.ts",
   "type": "module",
   "scripts": {
-    "build": "bun build ./src/main.ts --outdir ./scripts --watch"
+    "dev-bg": "bun build ./src/background.ts --outdir ./scripts --watch",
+    "dev-main": "bun build ./src/main.ts --outdir ./scripts --watch",
+    "dev": "bun run dev-bg & bun run dev-main",
+    "clean": "mkdir -p ./pack && rm -r ./pack/* && mkdir -p ./pack/biskuvi",
+    "pack": "bun run clean && cp -r ./manifest.json ./scripts/ ./images/ ./pack/biskuvi"
   },
   "devDependencies": {
     "@types/bun": "^1.1.12"

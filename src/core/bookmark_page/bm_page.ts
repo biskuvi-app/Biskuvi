@@ -1,3 +1,4 @@
+import { Browser } from "../../helpers/browser";
 import { Config, State } from "../../helpers/config";
 import { expect } from "../../helpers/nullish";
 import { rootSelect } from "../../helpers/root";
@@ -92,49 +93,57 @@ export async function insertBmPage() {
             newPostContentwithPfp =
               newPostItem.firstChild ?? expect<Node>("newPostContentwithPfp 5");
 
-            let iframe = document.createElement("iframe");
+            // temporary to embed
+            (newPostContentwithPfp.lastChild! as HTMLElement).innerText = atUri;
 
-            iframe.addEventListener("load", function () {
-              log("loaded");
-              let doc = iframe.contentDocument
-                ? iframe.contentDocument
-                : iframe.contentWindow!.document;
-              let root = doc.querySelector("div#root");
-              log(root);
-              function handler() {
-                for (let item of root!.querySelectorAll(
-                  "div[data-testid]",
-                ) as NodeListOf<HTMLDivElement>) {
-                  let dataTestId = item.getAttribute("data-testid");
-                  if (
-                    dataTestId &&
-                    dataTestId.startsWith("postThreadItem-by-")
-                  ) {
-                    console.log(dataTestId);
-                    bmListDiv.replaceChild(item, newPostItem);
-                  }
-                }
-              }
+            // let iframe = document.createElement("iframe");
 
-              setTimeout(handler, 3000);
-            });
+            // iframe.addEventListener("load", function () {
+            //   log("loaded");
+            //   let doc = iframe.contentDocument
+            //     ? iframe.contentDocument
+            //     : iframe.contentWindow!.document;
+            //   let root = doc.querySelector("div#root");
+            //   log(root);
+            //   function handler() {
+            //     for (let item of root!.querySelectorAll(
+            //       "div[data-testid]",
+            //     ) as NodeListOf<HTMLDivElement>) {
+            //       let dataTestId = item.getAttribute("data-testid");
+            //       if (
+            //         dataTestId &&
+            //         dataTestId.startsWith("postThreadItem-by-")
+            //       ) {
+            //         console.log(dataTestId);
+            //         bmListDiv.replaceChild(item, newPostItem);
+            //       }
+            //     }
+            //   }
+            //
+            //   setTimeout(handler, 3000);
+            // });
 
-            iframe.src = `https://bsky.app/profile/${did}/post/${postId}`;
-            iframe.setAttribute(
-              "style",
-              "position: absolute; width:100%;height:0;border: 0;border: none;",
-            );
+            // iframe.src = `https://bsky.app/profile/${did}/post/${postId}`;
+            // iframe.setAttribute(
+            //   "style",
+            //   "position: absolute; width:100%;height:0;border: 0;border: none;",
+            // );
 
-            newPostContentwithPfp.replaceChild(
-              iframe,
-              newPostContentwithPfp.lastChild!,
-            );
+            // newPostContentwithPfp.replaceChild(
+            //   newPostContentwithPfp.lastChild!,
+            //   iframe,
+            // );
 
-            // let embed = await getEmbed(atUri);
-            // for (let item in embed) {
-            //   log(item);
-            //   i++;
-            // }
+            // https://developer.chrome.com/docs/extensions/develop/concepts/network-requests
+            let embed = (await Browser.runtime.sendMessage({
+              request: "get_embed",
+              atUri: encodeURIComponent(atUri),
+            })) as JSON;
+
+            for (let item in embed) {
+              log(item);
+              i++;
+            }
 
             bmListDiv.insertBefore(newPostItem, bmListLastChild);
 

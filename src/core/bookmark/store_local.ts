@@ -1,17 +1,11 @@
 import type { BookmarkStorage } from "./interface";
 import { getPostAtUri } from "./bm_utils";
+import { Browser } from "../../helpers/browser";
 
 export class LocalStorage implements BookmarkStorage {
-  storage =
-    window.navigator.userAgent.toLowerCase().indexOf("firefox") > -1
-      ? // @ts-expect-error
-        browser.storage.local
-      : // @ts-expect-error
-        chrome.storage.local;
-
   async getBookmarks(): Promise<{ [keys: string]: string } | undefined | null> {
     let storage: { bookmarks: { [keys: string]: string } } =
-      (await this.storage.get("bookmarks")) ?? { bookmarks: {} };
+      (await Browser.storage.local.get("bookmarks")) ?? { bookmarks: {} };
 
     let bookmarks = storage.bookmarks;
     return bookmarks;
@@ -19,7 +13,7 @@ export class LocalStorage implements BookmarkStorage {
 
   async setBookmarks(bookmarks: { [keys: string]: string }) {
     let storage = { bookmarks: bookmarks };
-    await this.storage.set(storage);
+    await Browser.storage.local.set(storage);
   }
 
   async isBookmarked(postBody: HTMLDivElement) {
