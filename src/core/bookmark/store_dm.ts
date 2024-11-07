@@ -1,11 +1,6 @@
 import type { BookmarkStorage } from "./interface";
 import { expect } from "../../helpers/nullish";
-import {
-  deleteMessageForSelf,
-  getCid,
-  getDid,
-  sendMessage,
-} from "./store_dm_fetch";
+import { deleteMessageForSelf, getCid, sendMessage } from "./store_dm_fetch";
 import { getPostAtUri } from "./bm_utils";
 import { Config } from "../../helpers/config";
 
@@ -15,12 +10,10 @@ async function getBmDid() {
 }
 
 async function getConvoId() {
-  // "3l7swygaejx22";
   return "<ConvoId>";
 }
 
 export async function getPdsUrl() {
-  // "https://shiitake.us-east.host.bsky.network";
   return "<PdsUrl>";
 }
 
@@ -31,7 +24,8 @@ const DmState = {
 };
 
 export const Url = {
-  getEmbed: (atUri: string) => `${Config.oEmbedUrl}?url=${atUri}`,
+  getOEmbed: (atUri: string) => `${Config.oEmbedUrl}?url=${atUri}`,
+  getEmbed: (atUri: string) => `${Config.embedUrl}/${atUri}`,
   resolveHandle: (atProtoHandle: string) =>
     `${Config.handleResolverUrl}/xrpc/com.atproto.identity.resolveHandle?handle=${atProtoHandle}`,
   sendMessage: () => `${DmState.pdsUrl}/xrpc/chat.bsky.convo.sendMessage`,

@@ -52,8 +52,6 @@ async function getAtUri(postUrl: string) {
 
   let did = await getDid(atProtoHandle);
 
-  log(`Handle:${atProtoHandle}\nPost:${postId}\nDid:${did}`);
-
   return `at://${did}/app.bsky.feed.post/${postId}`;
 }
 

@@ -2,10 +2,11 @@ import type { BookmarkStorage } from "../core/bookmark/interface";
 import { CssVars } from "./constant";
 
 export const Config = {
-  interval: 500,
+  interval: 750,
   bookmarkPageUrlAlias: "/bookmarks",
   handleResolverUrl: "https://bsky.social",
   oEmbedUrl: "https://embed.bsky.app/oembed",
+  embedUrl: "https://embed.bsky.app/embed",
   css: `
     html{
       ${CssVars.btnTextBmed}: #0085ff;

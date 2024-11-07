@@ -10,13 +10,11 @@
     "128": "images/icon-128.png"
   },
   "permissions": ["storage", "unlimitedStorage", "webNavigation"],
-  "background": {
-    "service_worker": "scripts/background.js"
-  },
   "content_scripts": [
     {
       "js": ["scripts/main.js"],
-      "matches": ["https://bsky.app/*"]
+      "matches": ["https://bsky.app/*", "https://embed.bsky.app/*"],
+      "all_frames": true
     }
   ]
 }

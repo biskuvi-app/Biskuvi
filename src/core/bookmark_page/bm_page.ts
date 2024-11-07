@@ -2,25 +2,27 @@ import { Browser } from "../../helpers/browser";
 import { Config, State } from "../../helpers/config";
 import { expect } from "../../helpers/nullish";
 import { rootSelect } from "../../helpers/root";
-import { log } from "../../helpers/utils";
-import { getEmbed } from "../bookmark/bm_utils";
+import { err, log } from "../../helpers/utils";
 import type { BookmarkStorage } from "../bookmark/interface";
+import { Url } from "../bookmark/store_dm";
 
 export async function insertBmPage() {
   let bmPageInterval = null as Timer | null;
+  window.addEventListener("popstate", (event: PopStateEvent) => {
+    if (event.state) {
+      let Location = document.location.href;
+      startBmPageInterval();
 
-  // window.addEventListener("popstate", (event: PopStateEvent) => {
-  // if (event.state) {
-  // let Location = document.location.href;
-  // alert(
-  // `location: ${document.location}, state: ${JSON.stringify(event.state)}`,
-  // );
-  // }
-  // });
+      alert(
+        `location: ${document.location}, state: ${JSON.stringify(event.state)}`,
+      );
+    }
+  });
 
   function startBmPageInterval() {
     bmPageInterval = setInterval(activeOnBmUrl, 50);
   }
+
   function pauseBmPageInterval() {
     if (bmPageInterval) {
       clearInterval(bmPageInterval);
@@ -35,33 +37,14 @@ export async function insertBmPage() {
     ) {
       let likeBtn = rootSelect("div.bd[data-testid='likeBtn']")!;
       if (likeBtn) {
+        log("found like btn");
         pauseBmPageInterval();
-        history.replaceState(null, "", Config.bookmarkPageUrlAlias);
-        log("found");
+        history.replaceState("", Config.bookmarkPageUrlAlias);
 
-        let likeBtnWithFrame =
-          likeBtn.parentNode ?? expect<Node>("likeBtnWithFrame");
-        let postButtons =
-          likeBtnWithFrame.parentNode ?? expect<Node>("postButtons");
-        let postContent = postButtons.parentNode ?? expect<Node>("postContent");
-        let postContentwithPfp =
-          postContent.parentNode ?? expect<Node>("postContentwithPfp");
-        let postContentwithPfpWithSpacing =
-          postContentwithPfp.parentNode ??
-          expect<Node>("postContentwithPfpWithSpacing");
-        let postItemWithFrame1 =
-          postContentwithPfpWithSpacing.parentNode ??
-          expect<Node>("postItemWithFrame1");
-        let postItemWithFrame2 =
-          postItemWithFrame1.parentNode ?? expect<Node>("postItemWithFrame2");
-        let postItemWithTopFrame =
-          postItemWithFrame2.parentNode ?? expect<Node>("postItemWithTopFrame");
-        log(postItemWithTopFrame);
-        let bmListDiv =
-          postItemWithTopFrame.parentNode ?? expect<Node>("bmListDiv");
-        let postItemRef = postItemWithTopFrame.parentNode!.removeChild(
-          postItemWithTopFrame,
-        ) as HTMLDivElement;
+        let postItemWithTopFrame = getPostItemRef(likeBtn);
+
+        let bmListDiv = postItemWithTopFrame[0];
+        let postItemRef = postItemWithTopFrame[1];
 
         let bmListLastChild =
           bmListDiv.lastChild ?? expect<Node>("bmListLastChild");
@@ -69,97 +52,139 @@ export async function insertBmPage() {
         let storage =
           State.storage ?? expect<BookmarkStorage>("Invalid storage");
         let bookmarks = (await storage.getBookmarks())!;
+
         if (bookmarks) {
           let i = 0;
+          log("Bookmarks:");
           for (let atUri in bookmarks) {
-            if (i > 2) {
-              break;
-            }
-            log(atUri);
-            let removedPrefixUri = atUri.replace("at://", "");
-            let slashSplitUri = removedPrefixUri.split("/");
-            let did = slashSplitUri[0];
-            let postId = slashSplitUri[slashSplitUri.length - 1];
-            let newPostItem = postItemRef.cloneNode(true);
-
-            let newPostContentwithPfp =
-              newPostItem.firstChild ?? expect<Node>("newPostContentwithPfp 1");
-            newPostContentwithPfp =
-              newPostItem.firstChild ?? expect<Node>("newPostContentwithPfp 2");
-            newPostContentwithPfp =
-              newPostItem.firstChild ?? expect<Node>("newPostContentwithPfp 3");
-            newPostContentwithPfp =
-              newPostItem.firstChild ?? expect<Node>("newPostContentwithPfp 4");
-            newPostContentwithPfp =
-              newPostItem.firstChild ?? expect<Node>("newPostContentwithPfp 5");
-
-            // temporary to embed
-            (newPostContentwithPfp.lastChild! as HTMLElement).innerText = atUri;
-
-            // let iframe = document.createElement("iframe");
-
-            // iframe.addEventListener("load", function () {
-            //   log("loaded");
-            //   let doc = iframe.contentDocument
-            //     ? iframe.contentDocument
-            //     : iframe.contentWindow!.document;
-            //   let root = doc.querySelector("div#root");
-            //   log(root);
-            //   function handler() {
-            //     for (let item of root!.querySelectorAll(
-            //       "div[data-testid]",
-            //     ) as NodeListOf<HTMLDivElement>) {
-            //       let dataTestId = item.getAttribute("data-testid");
-            //       if (
-            //         dataTestId &&
-            //         dataTestId.startsWith("postThreadItem-by-")
-            //       ) {
-            //         console.log(dataTestId);
-            //         bmListDiv.replaceChild(item, newPostItem);
-            //       }
-            //     }
-            //   }
-            //
-            //   setTimeout(handler, 3000);
-            // });
-
-            // iframe.src = `https://bsky.app/profile/${did}/post/${postId}`;
-            // iframe.setAttribute(
-            //   "style",
-            //   "position: absolute; width:100%;height:0;border: 0;border: none;",
-            // );
-
-            // newPostContentwithPfp.replaceChild(
-            //   newPostContentwithPfp.lastChild!,
-            //   iframe,
-            // );
-
-            // https://developer.chrome.com/docs/extensions/develop/concepts/network-requests
-            let embed = (await Browser.runtime.sendMessage({
-              request: "get_embed",
-              atUri: encodeURIComponent(atUri),
-            })) as JSON;
-
-            for (let item in embed) {
-              log(item);
-              i++;
-            }
-
-            bmListDiv.insertBefore(newPostItem, bmListLastChild);
+            i += 1;
+            log(`${i} - ${atUri}`);
+            let bmPostItem = createBmPostItem(atUri, postItemRef);
+            bmListDiv.insertBefore(bmPostItem, bmListLastChild);
 
             postItemRef.onclick = () => {
               history.pushState("", State.bookmarkPageUrl!);
-              startBmPageInterval();
             };
           }
         } else {
           log("No bookmarks");
         }
-
-        (postItemWithTopFrame as HTMLElement).remove(); // no longer used here
       }
     }
   }
 
   startBmPageInterval();
+}
+
+function getPostItemRef(likeBtn: Node) {
+  let likeBtnWithFrame = likeBtn.parentNode ?? expect<Node>("likeBtnWithFrame");
+  let postButtons = likeBtnWithFrame.parentNode ?? expect<Node>("postButtons");
+  let postContent = postButtons.parentNode ?? expect<Node>("postContent");
+  let postContentwithPfp =
+    postContent.parentNode ?? expect<Node>("postContentwithPfp");
+  let postContentwithPfpWithSpacing =
+    postContentwithPfp.parentNode ??
+    expect<Node>("postContentwithPfpWithSpacing");
+  let postItemWithFrame1 =
+    postContentwithPfpWithSpacing.parentNode ??
+    expect<Node>("postItemWithFrame1");
+  let postItemWithFrame2 =
+    postItemWithFrame1.parentNode ?? expect<Node>("postItemWithFrame2");
+  let postItemWithTopFrame =
+    postItemWithFrame2.parentNode ?? expect<Node>("postItemWithTopFrame");
+  return [
+    postItemWithTopFrame.parentNode! as HTMLElement,
+    postItemWithTopFrame.parentNode!.removeChild(
+      postItemWithTopFrame,
+    ) as HTMLElement,
+  ];
+}
+
+function createBmPostItem(atUri: string, postItemRef: Node) {
+  let bmPostItem = postItemRef.cloneNode(true) as HTMLElement;
+
+  let newPostItemWithFrame2 =
+    bmPostItem.firstElementChild ??
+    expect<HTMLElement>("newPostItemWithFrame2");
+  let newPostItemWithFrame1 =
+    newPostItemWithFrame2.firstElementChild ??
+    expect<HTMLElement>("newPostItemWithFrame1");
+  let newPostContentwithPfpWithSpacing =
+    newPostItemWithFrame1.firstElementChild ??
+    expect<HTMLElement>("newPostContentwithPfpWithSpacing");
+  let newPostContentwithPfp =
+    newPostContentwithPfpWithSpacing.firstElementChild?.nextElementSibling ??
+    expect<HTMLElement>("newPostContentwithPfp");
+  let newPostPfp =
+    newPostContentwithPfp.firstElementChild ??
+    expect<HTMLElement>("newPostPfp");
+
+  let img =
+    newPostPfp.firstElementChild!.firstElementChild!.firstElementChild!
+      .firstElementChild!.firstElementChild!.firstElementChild ??
+    expect<Element>("img");
+
+  let newPostContent =
+    newPostPfp.nextElementSibling ?? expect<HTMLElement>("newPostContent");
+  log(newPostContent);
+
+  let newPostTitleDate =
+    newPostContent.firstElementChild ?? expect<HTMLElement>("newPostTitleDate");
+  log(newPostTitleDate);
+
+  let newPostBody =
+    newPostTitleDate.nextElementSibling ?? expect<HTMLElement>("newPostBody");
+  log(newPostBody);
+
+  let newPostButtons =
+    newPostBody.nextElementSibling ?? expect<HTMLElement>("newPostButtons");
+  log(newPostButtons);
+
+  let iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.addEventListener("load", async () => {
+    let data: { [key: string]: string } | null = null;
+
+    let count = 0;
+    let findEmbedInStorageInterval: Timer | null;
+    async function findEmbedInStorage() {
+      count += 1;
+      if (count > 20) {
+        if (findEmbedInStorageInterval) {
+          clearInterval(findEmbedInStorageInterval);
+        }
+        return;
+      }
+      try {
+        data = await Browser.storage.local.get(atUri);
+      } catch (e) {
+        err(`Error getting data ${e}`);
+      }
+      if (!data) {
+        return;
+      }
+      let value = data[atUri];
+      log(`Found stored embed ${atUri} :\n ${value}`);
+      let parser = new DOMParser();
+      let xmlDoc = parser.parseFromString(value, "text/html");
+
+      // // TODO: put data into its boxes
+      // // also yeah querySelector wont work, use firstElementChild or similar instead
+
+      // let newPfp = xmlDoc.querySelector("img");
+      // if (newPfp) {
+      //   (img as HTMLElement).style.backgroundImage = newPfp.src;
+      // }
+      // newPostContentwithPfp.appendChild(xmlDoc);
+      if (findEmbedInStorageInterval) {
+        clearInterval(findEmbedInStorageInterval);
+      }
+    }
+
+    findEmbedInStorageInterval = setInterval(findEmbedInStorage, 500);
+  });
+
+  iframe.src = Url.getEmbed(atUri.split("at://")[1]);
+  bmPostItem.appendChild(iframe);
+  return bmPostItem;
 }
