@@ -29,11 +29,11 @@ export const Url = {
     `${Config.handleResolverUrl}/xrpc/com.atproto.identity.resolveHandle?handle=${atProtoHandle}`,
   sendMessage: () => `${DmState.pdsUrl}/xrpc/chat.bsky.convo.sendMessage`,
   deleteMessageForSelf: () =>
-    `${RsOk<string>(DmState.pdsUrl)}("deleteMessageForSelf")}/xrpc/chat.bsky.convo.deleteMessageForSelf`,
+    `${RsOk<string>(DmState.pdsUrl)}/xrpc/chat.bsky.convo.deleteMessageForSelf`,
   getConvoForMembers: () =>
-    `${RsOk<string>(DmState.pdsUrl)}("getConvoForMembers")}/xrpc/chat.bsky.convo.getConvoForMembers?members=${DmState.bookmarkAccDid}`,
+    `${RsOk<string>(DmState.pdsUrl)}/xrpc/chat.bsky.convo.getConvoForMembers?members=${DmState.bookmarkAccDid}`,
   getPosts: (did: string, postId: string) =>
-    `${RsOk<string>(DmState.pdsUrl)}("getPosts")}/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2F${did}%2Fapp.bsky.feed.post%2F${postId}`,
+    `${RsOk<string>(DmState.pdsUrl)}/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2F${did}%2Fapp.bsky.feed.post%2F${postId}`,
 };
 
 export async function loadState() {

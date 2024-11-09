@@ -12,7 +12,7 @@ export async function insertBookmarksPage() {
 }
 
 function findLikeBtn() {
-  return rootSelect("div.bd[data-testid='likeBtn']");
+  return rootSelect("button.bd[data-testid='likeBtn']");
 }
 
 function handleLikeBtn(likeBtn: HTMLElement) {
