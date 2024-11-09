@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "bun build ./src/main.ts --outdir ./scripts --watch",
     "clean": "mkdir -p ./pack && rm -r ./pack/* && mkdir -p ./pack/biskuvi",
-    "pack": "bun run clean && cp -r ./manifest.json ./scripts/ ./images/ ./pack/biskuvi"
+    "pack": "bun run clean && cp -r ./manifest.json ./scripts/ ./assets/ ./pack/biskuvi"
   },
   "devDependencies": {
     "@types/bun": "^1.1.12"

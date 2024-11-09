@@ -1,6 +1,6 @@
 // compatibility for firefox and chromium
 
-import { expect } from "./nullish";
+import { RsOk } from "./result";
 import { err, log } from "./utils";
 
 let currentBrowser: any = null;
@@ -29,7 +29,7 @@ function getCurrentBrowser() {
 }
 
 export class Browser {
-  static browser = getCurrentBrowser() ?? expect<any>("browser");
-  static storage = this.browser.storage ?? expect<any>("storage");
-  static runtime = this.browser.runtime ?? expect<any>("runtime");
+  static browser = RsOk<any>(getCurrentBrowser());
+  static storage = RsOk<any>(this.browser.storage);
+  static runtime = RsOk<any>(this.browser.runtime);
 }

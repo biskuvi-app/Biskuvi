@@ -1,5 +1,5 @@
 import type { BookmarkStorage } from "./interface";
-import { expect } from "../../helpers/nullish";
+import { RsOk } from "../../helpers/result";
 import { deleteMessageForSelf, getCid, sendMessage } from "./store_dm_fetch";
 import { getPostAtUri } from "./bm_utils";
 import { Config } from "../../helpers/config";
@@ -24,17 +24,16 @@ const DmState = {
 };
 
 export const Url = {
-  getOEmbed: (atUri: string) => `${Config.oEmbedUrl}?url=${atUri}`,
   getEmbed: (atUri: string) => `${Config.embedUrl}/${atUri}`,
   resolveHandle: (atProtoHandle: string) =>
     `${Config.handleResolverUrl}/xrpc/com.atproto.identity.resolveHandle?handle=${atProtoHandle}`,
   sendMessage: () => `${DmState.pdsUrl}/xrpc/chat.bsky.convo.sendMessage`,
   deleteMessageForSelf: () =>
-    `${DmState.pdsUrl ?? expect<string>("deleteMessageForSelf")}/xrpc/chat.bsky.convo.deleteMessageForSelf`,
+    `${RsOk<string>(DmState.pdsUrl)}("deleteMessageForSelf")}/xrpc/chat.bsky.convo.deleteMessageForSelf`,
   getConvoForMembers: () =>
-    `${DmState.pdsUrl ?? expect<string>("getConvoForMembers")}/xrpc/chat.bsky.convo.getConvoForMembers?members=${DmState.bookmarkAccDid}`,
+    `${RsOk<string>(DmState.pdsUrl)}("getConvoForMembers")}/xrpc/chat.bsky.convo.getConvoForMembers?members=${DmState.bookmarkAccDid}`,
   getPosts: (did: string, postId: string) =>
-    `${DmState.pdsUrl ?? expect<string>("getPosts")}/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2F${did}%2Fapp.bsky.feed.post%2F${postId}`,
+    `${RsOk<string>(DmState.pdsUrl)}("getPosts")}/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2F${did}%2Fapp.bsky.feed.post%2F${postId}`,
 };
 
 export async function loadState() {
@@ -52,19 +51,18 @@ export class DmStorage implements BookmarkStorage {
   async getBookmarks(): Promise<{ [keys: string]: string } | undefined | null> {
     throw "not implemented";
   }
-  async isBookmarked(postBody: HTMLDivElement): Promise<boolean> {
+  async isBookmarked(postBody: Element): Promise<boolean> {
     throw "not implemented";
   }
-  async addBookmark(postBody: HTMLDivElement) {
+  async addBookmark(postBody: Element) {
     let atUri = await getPostAtUri(postBody);
     let cid = await getCid(atUri);
     let messageId = await sendMessage(atUri, cid);
     postBody.setAttribute("messageId", messageId);
   }
 
-  async removeBookmark(postBody: HTMLElement) {
-    let messageId =
-      postBody.getAttribute("messageId") ?? expect<string>("messageId");
+  async removeBookmark(postBody: Element) {
+    let messageId = RsOk<string>(postBody.getAttribute("messageId"));
     await deleteMessageForSelf(messageId);
   }
 }

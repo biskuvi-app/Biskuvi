@@ -4,15 +4,16 @@
   "version": "1.0",
   "description": "Tools and custom features for Bluesky website, bsky.app",
   "icons": {
-    "16": "images/icon-16.png",
-    "32": "images/icon-32.png",
-    "48": "images/icon-48.png",
-    "128": "images/icon-128.png"
+    "16": "assets/icon/icon-16.png",
+    "32": "assets/icon/icon-32.png",
+    "48": "assets/icon/icon-48.png",
+    "128": "assets/icon/icon-128.png"
   },
   "permissions": ["storage", "unlimitedStorage", "webNavigation"],
   "content_scripts": [
     {
       "js": ["scripts/main.js"],
+      "css": ["assets/css/biskuvi.css"],
       "matches": ["https://bsky.app/*", "https://embed.bsky.app/*"],
       "all_frames": true
     }

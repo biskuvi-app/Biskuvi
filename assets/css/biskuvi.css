@@ -1,0 +1,19 @@
+html {
+    --btnTextBmed: #0085ff;
+    --btnTextErr: red;
+}
+html.theme--light {
+    --btnText: rgb(111, 134, 159);
+    --btnHover: rgb(241, 243, 245);
+}
+html.theme--dark {
+    --btnText: rgb(111, 134, 159);
+    --btnHover: rgb(20, 27, 35);
+}
+html.theme--dim {
+    --btnText: rgb(120, 142, 165);
+    --btnHover: rgb(30, 41, 54);
+}
+.bm:hover {
+    background-color: var(--btnHover);
+}

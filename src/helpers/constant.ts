@@ -17,17 +17,19 @@ export const BookmarkIcon = {
   bookmarkedSvgData:
     "M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z",
   svgViewBox: "0 0 384 512",
-  svgViewBoxSmall: (function () {
-    let width = 384;
-    let height = 512;
-    let scale = 1.2;
-    let scaleOffset = 0.1; // (scale - 1.0) / 2.0;
-
-    let offsetW = -width * scaleOffset;
-    let offsetH = -height * scaleOffset;
-    let finalWidth = width * scale;
-    let finalHeight = height * scale;
-
-    return `${offsetW} ${offsetH} ${finalWidth} ${finalHeight}`;
-  })(),
+  svgViewBoxSmall: "-38 -51 460 614",
 };
+
+// (function () {
+//   let width = 384;
+//   let height = 512;
+//   let scale = 1.2;
+//   let scaleOffset = 0.1; // (scale - 1.0) / 2.0;
+
+//   let offsetW = -width * scaleOffset;
+//   let offsetH = -height * scaleOffset;
+//   let finalWidth = width * scale;
+//   let finalHeight = height * scale;
+
+//   return `${offsetW} ${offsetH} ${finalWidth} ${finalHeight}`;
+// })();

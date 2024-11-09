@@ -1,4 +1,4 @@
-import { expect } from "../../helpers/nullish";
+import { RsOk } from "../../helpers/result";
 import { log } from "../../helpers/utils";
 import { Url } from "./store_dm";
 
@@ -47,15 +47,15 @@ async function getAtUri(postUrl: string) {
     throw "bmBtnOnClick: invalid splitPostFromUrl.length";
   }
 
-  let atProtoHandle = splitPostFromUrl[0] ?? expect<string>("splitPostFromUrl");
-  let postId = splitPostFromUrl[1] ?? expect<string>("splitPostFromUrl");
+  let atProtoHandle = RsOk<string>(splitPostFromUrl[0]);
+  let postId = RsOk<string>(splitPostFromUrl[1]);
 
   let did = await getDid(atProtoHandle);
 
   return `at://${did}/app.bsky.feed.post/${postId}`;
 }
 
-export async function getPostAtUri(postBody: HTMLDivElement) {
+export async function getPostAtUri(postBody: Element) {
   let atUri = postBody.getAttribute("atUri");
   if (!atUri) {
     atUri = await getAtUri(getPostUrl(postBody));
@@ -64,7 +64,7 @@ export async function getPostAtUri(postBody: HTMLDivElement) {
   return atUri;
 }
 
-function getPostUrl(postBody: HTMLDivElement) {
+function getPostUrl(postBody: Element) {
   let postUrl = postBody.getAttribute("postUrl");
   if (postUrl) {
     return postUrl;
@@ -100,23 +100,13 @@ function getPostUrl(postBody: HTMLDivElement) {
     }
   }
 
+  // todo: add lookup handler for custom domain / redirects
   let windowUrl = window.location.href;
   log(windowUrl);
   if (hasProfile(windowUrl) && hasPost(windowUrl)) {
-    postBody =
-      (postBody.parentNode as HTMLDivElement) ??
-      expect<HTMLDivElement>("postBody");
-    postBody =
-      (postBody.parentNode as HTMLDivElement) ??
-      expect<HTMLDivElement>("postBody");
-    log(postBody);
-    let postHead =
-      (postBody.firstChild as HTMLElement) ??
-      expect<HTMLElement>("postHead.FirstChild");
-
-    let anchor =
-      postHead.querySelector("a") ?? expect<HTMLAnchorElement>("anchor");
-
+    postBody = RsOk<Element>(RsOk<Element>(postBody.parentNode).parentNode);
+    let postHead = RsOk<HTMLElement>(postBody.firstChild);
+    let anchor = RsOk<HTMLAnchorElement>(postHead.querySelector("a"));
     if (hasProfile(anchor.href)) {
       if (windowUrl.indexOf(anchor.href) > -1) {
         return windowUrl;

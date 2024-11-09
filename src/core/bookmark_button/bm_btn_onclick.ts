@@ -1,27 +1,18 @@
 import { State } from "../../helpers/config";
 import { BookmarkIcon, CssVars } from "../../helpers/constant";
-import { expect } from "../../helpers/nullish";
+import { RsOk } from "../../helpers/result";
 import type { BookmarkStorage } from "../bookmark/interface";
 
 export async function bmBtnOnClick(e: Event) {
   e.preventDefault();
 
-  let currTarget =
-    (e.currentTarget as HTMLElement) ?? expect<HTMLDivElement>("currTarget");
+  let currTarget = RsOk<HTMLElement>(e.currentTarget);
+  let postBody = RsOk<Element>(currTarget.parentNode?.parentNode?.parentNode);
+  let bmSvgPath = RsOk<Element>(currTarget.querySelector("path"));
 
-  let postBody =
-    (currTarget.parentNode?.parentNode?.parentNode as HTMLDivElement) ??
-    expect<HTMLDivElement>("postBody");
-
-  let bmSvgPath = currTarget.querySelector("path");
-  if (!bmSvgPath) {
-    throw "bmBtnOnClick: bmSvgPath is null";
-  }
-
-  bmSvgPath.setAttribute("fill", `var(${CssVars.btnText})`);
-
-  let storage = State.storage ?? expect<BookmarkStorage>("storage");
+  let storage = RsOk<BookmarkStorage>(State.storage);
   if (!(await storage.isBookmarked(postBody))) {
+    // add to bookmarks
     try {
       bmSvgPath.setAttribute("d", BookmarkIcon.bookmarkedSvgData);
       await storage.addBookmark(postBody);
@@ -32,6 +23,7 @@ export async function bmBtnOnClick(e: Event) {
       throw `Error adding bookmark: ${error.message}`;
     }
   } else {
+    // remove from bookmarks
     try {
       bmSvgPath.setAttribute("d", BookmarkIcon.normalSvgData);
       await storage.removeBookmark(postBody);
@@ -43,3 +35,5 @@ export async function bmBtnOnClick(e: Event) {
     }
   }
 }
+
+// color: rgb(241, 243, 245);

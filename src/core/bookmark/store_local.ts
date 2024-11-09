@@ -16,7 +16,7 @@ export class LocalStorage implements BookmarkStorage {
     await Browser.storage.local.set(storage);
   }
 
-  async isBookmarked(postBody: HTMLDivElement) {
+  async isBookmarked(postBody: Element) {
     let url = await getPostAtUri(postBody);
     let bookmarks = await this.getBookmarks();
     if (!bookmarks) {
@@ -25,7 +25,7 @@ export class LocalStorage implements BookmarkStorage {
     return url in bookmarks;
   }
 
-  async addBookmark(postBody: HTMLDivElement) {
+  async addBookmark(postBody: Element) {
     let bookmarks = await this.getBookmarks();
     if (!bookmarks) {
       bookmarks = {};
@@ -34,7 +34,7 @@ export class LocalStorage implements BookmarkStorage {
     await this.setBookmarks(bookmarks);
   }
 
-  async removeBookmark(postBody: HTMLDivElement) {
+  async removeBookmark(postBody: Element) {
     let bookmarks = await this.getBookmarks();
     if (!bookmarks) {
       return;

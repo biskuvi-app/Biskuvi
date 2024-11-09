@@ -1,3 +1,6 @@
+import { BookmarkUrlState } from "../core/bookmark_url/state";
+import { RsOk } from "./result";
+
 export function log(text: any): void {
   console.log(text);
 }
@@ -46,4 +49,32 @@ export function waitElement(selector: string) {
       });
     }
   });
+}
+
+// poll to find value cuz sometimes listener/observer wont work
+// stop polling once found. if pause in ms included, poll will resume
+export function pollFind<T>(
+  findFn: () => any,
+  handler: (value: T) => any,
+  interval: number,
+  pause?: number,
+) {
+  let timer: Timer | null = null;
+
+  function innerHandler() {
+    let found = findFn();
+    if (found) {
+      clearInterval(RsOk<Timer>(timer));
+      if (pause) {
+        setTimeout(startInterval, pause);
+      }
+      handler(found);
+    }
+  }
+
+  function startInterval() {
+    timer = setInterval(innerHandler, interval);
+  }
+
+  startInterval();
 }
