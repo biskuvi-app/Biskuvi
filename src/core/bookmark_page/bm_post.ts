@@ -5,23 +5,54 @@ import { Url } from "../bookmark/store_dm";
 
 export function createBmPostItem(atUri: string, postItemRef: Node) {
   let bmPostItem = postItemRef.cloneNode(true) as HTMLElement;
+  bmPostItem.style.display = "block";
+  log("bmPostItem");
+  log(bmPostItem);
 
   let newItemWFrame2 = RsOk<HTMLElement>(bmPostItem.firstElementChild);
-  let newWFrame1 = RsOk<HTMLElement>(newItemWFrame2.firstElementChild);
-  let newContentWPfpWSpacing = RsOk<HTMLElement>(newWFrame1.firstElementChild);
-  let newPostContentwithPfp = RsOk<HTMLElement>(
-    newContentWPfpWSpacing.firstElementChild?.nextElementSibling,
-  );
-  let newPostPfp = RsOk<HTMLElement>(newPostContentwithPfp.firstElementChild);
+  log("newItemWFrame2");
+  log(newItemWFrame2);
 
-  let img = RsOk<Element>(
-    newPostPfp.firstChild!.firstChild!.firstChild!.firstChild!.firstChild!
-      .firstChild,
+  let newWFrame1 = RsOk<HTMLElement>(newItemWFrame2.firstElementChild);
+  log("newWFrame1");
+  log(newWFrame1);
+
+  let newContentWPfpWSpacing = RsOk<HTMLElement>(newWFrame1.firstElementChild);
+  log("newContentWPfpWSpacing");
+  log(newContentWPfpWSpacing);
+
+  let newPostSpacingEmpty = RsOk<HTMLElement>(
+    newContentWPfpWSpacing.firstElementChild,
   );
+  log("newPostContentwithPfp");
+  log(newPostSpacingEmpty);
+  let newPostSpacingEmpty2 = RsOk<HTMLElement>(
+    newPostSpacingEmpty.nextElementSibling,
+  );
+  log("newPostContentwithPfp2");
+  log(newPostSpacingEmpty2);
+
+  let newPostContentwithPfp = RsOk<HTMLElement>(
+    newPostSpacingEmpty2.nextElementSibling,
+  );
+  log("newPostContentwithPfp2");
+  log(newPostSpacingEmpty2);
+
+  let newPostPfp = RsOk<HTMLElement>(newPostContentwithPfp.firstElementChild);
+  log("newPostPfp");
+  log(newPostPfp);
+  // let img = RsOk<Element>(
+  //   newPostPfp.firstChild!.firstChild!.firstChild!.firstChild!.firstChild!
+  //     .firstChild,
+  // );
 
   let newPostContent = RsOk<HTMLElement>(newPostPfp.nextElementSibling);
+  log("newPostContent");
   log(newPostContent);
+
   let newPostTitleDate = RsOk<HTMLElement>(newPostContent.firstElementChild);
+  log("newPostTitleDate");
+
   log(newPostTitleDate);
   let newPostBody = RsOk<HTMLElement>(newPostTitleDate.nextElementSibling);
   log(newPostBody);

@@ -2,6 +2,18 @@ import { BookmarkUrlState } from "../core/bookmark_url/state";
 import { RsOk } from "./result";
 
 export function log(text: any): void {
+  let stack = Error("").stack;
+  if (stack) {
+    let sources = stack.split("\n");
+    if (sources.length > 2) {
+      let source = sources[2].trimStart();
+      source = source.replace(/^at/, "");
+      source = source.trimStart();
+      console.log(source);
+      console.log(text);
+      return;
+    }
+  }
   console.log(text);
 }
 

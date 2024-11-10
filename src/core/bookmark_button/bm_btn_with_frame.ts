@@ -8,6 +8,7 @@ import { bmBtnOnClick } from "./bm_btn_onclick";
 export async function createBmBtnWithFrame(likeBtnWFrame: Node) {
   let bmBtnFrame = likeBtnWFrame.cloneNode(true);
   let bmBtn = RsOk<HTMLElement>(bmBtnFrame.firstChild);
+  bmBtn.style.display = "none";
   bmBtn.setAttribute("aria-label", locale("Bookmark"));
   bmBtn.removeAttribute("data-testid");
 
@@ -18,7 +19,8 @@ export async function createBmBtnWithFrame(likeBtnWFrame: Node) {
 
   let postButtons = RsOk<Node>(likeBtnWFrame.parentNode);
   let postBody = RsOk<Element>(postButtons.parentNode);
-  setBmIcon(postBody, bmBtn);
+  await setBmIcon(postBody, bmBtn);
+  bmBtn.style.display = "block";
 
   // set css .bm:hover
   bmBtn.classList.add("bm");
@@ -27,7 +29,7 @@ export async function createBmBtnWithFrame(likeBtnWFrame: Node) {
   return bmBtnFrame;
 }
 
-async function setBmIcon(postBody: Element, bmBtn: Element) {
+async function setBmIcon(postBody: Element, bmBtn: HTMLElement) {
   let bmSvgPath = RsOk<SVGPathElement>(bmBtn.querySelector("path"));
   let storage = RsOk<BookmarkStorage>(State.storage);
 
@@ -40,5 +42,5 @@ async function setBmIcon(postBody: Element, bmBtn: Element) {
   }
 
   let svg = RsOk<Element>(bmSvgPath.parentNode);
-  svg.setAttribute("viewBox", BookmarkIcon.svgViewBoxSmall);
+  svg.setAttribute("viewBox", BookmarkIcon.svgViewBox);
 }

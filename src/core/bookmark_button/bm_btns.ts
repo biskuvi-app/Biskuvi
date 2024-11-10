@@ -22,10 +22,13 @@ function insertBmBtns(likeBtns: NodeListOf<HTMLElement>) {
     let likeBtnWFrame = RsOk<Node>(likeBtn.parentNode);
 
     // async insertion
-    createBmBtnWithFrame(likeBtnWFrame).then((bmBtnWithFrame) => {
+    //
+    (async () => {
+      let bmBtnWithFrame = await createBmBtnWithFrame(likeBtnWFrame);
       let postButtons = RsOk<Node>(likeBtnWFrame.parentNode);
-      if (postButtons.insertBefore(bmBtnWithFrame, likeBtnWFrame.nextSibling)) {
-      }
-    });
+      RsOk<Node>(
+        postButtons.insertBefore(bmBtnWithFrame, likeBtnWFrame.nextSibling),
+      );
+    })();
   }
 }
