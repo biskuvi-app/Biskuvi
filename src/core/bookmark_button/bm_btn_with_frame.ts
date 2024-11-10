@@ -2,6 +2,7 @@ import { State } from "../../helpers/config";
 import { BookmarkIcon, CssVars } from "../../helpers/constant";
 import { locale } from "../../helpers/locale";
 import { RsOk } from "../../helpers/result";
+import { err } from "../../helpers/utils";
 import type { BookmarkStorage } from "../bookmark/interface";
 import { bmBtnOnClick } from "./bm_btn_onclick";
 
@@ -14,7 +15,11 @@ export async function createBmBtnWithFrame(likeBtnWFrame: Node) {
 
   // remove like counts
   while (bmBtn.children.length > 1) {
-    bmBtn.removeChild(bmBtn.lastChild!);
+    try {
+      bmBtn.removeChild(RsOk<Node>(bmBtn.lastChild)!);
+    } catch (e: any) {
+      err(e);
+    }
   }
 
   let postButtons = RsOk<Node>(likeBtnWFrame.parentNode);

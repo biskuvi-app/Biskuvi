@@ -1,219 +1,193 @@
 import { Browser } from "../../helpers/browser";
+import { Config } from "../../helpers/config";
 import { CssVars } from "../../helpers/constant";
 import { RsOk } from "../../helpers/result";
-import { log, err } from "../../helpers/utils";
+import type { EmbedData } from "../../helpers/type";
+import { log, err, pollFind } from "../../helpers/utils";
 import { Url } from "../bookmark/store_dm";
 
 export function createBmPostItem(atUri: string, postItemRef: Node) {
   let bmPostItem = postItemRef.cloneNode(true) as HTMLElement;
 
-  //// querySelector wont work, use firstElementChild or similar method instead
+  //// querySelector wont work, use firstChild or similar method instead
 
   bmPostItem.style.display = "block";
-  log("bmPostItem");
-  log(bmPostItem);
+  // log("bmPostItem");
+  // log(bmPostItem);
 
-  let newItemWFrame2 = RsOk<HTMLElement>(bmPostItem.firstElementChild);
-  log("newItemWFrame2");
-  log(newItemWFrame2);
+  let newItemWFrame2 = RsOk<HTMLElement>(bmPostItem.firstChild);
+  // log("newItemWFrame2");
+  // log(newItemWFrame2);
 
-  let newWFrame1 = RsOk<HTMLElement>(newItemWFrame2.firstElementChild);
-  log("newWFrame1");
-  log(newWFrame1);
+  let newWFrame1 = RsOk<HTMLElement>(newItemWFrame2.firstChild);
+  // log("newWFrame1");
+  // log(newWFrame1);
 
-  let newContentWPfpWSpacing = RsOk<HTMLElement>(newWFrame1.firstElementChild);
-  log("newContentWPfpWSpacing");
-  log(newContentWPfpWSpacing);
+  let newContentWPfpWSpacing = RsOk<HTMLElement>(newWFrame1.firstChild);
+  // log("newContentWPfpWSpacing");
+  // log(newContentWPfpWSpacing);
 
   let newPostSpacingEmpty = RsOk<HTMLElement>(
-    newContentWPfpWSpacing.firstElementChild,
+    newContentWPfpWSpacing.firstChild,
   );
-  log("newPostContentwithPfp");
-  log(newPostSpacingEmpty);
-  let newPostSpacingEmpty2 = RsOk<HTMLElement>(
-    newPostSpacingEmpty.nextElementSibling,
-  );
-  log("newPostContentwithPfp2");
-  log(newPostSpacingEmpty2);
+  // log("newPostContentwithPfp");
+  // log(newPostSpacingEmpty);
+  let newPostSpacingEmpty2 = RsOk<HTMLElement>(newPostSpacingEmpty.nextSibling);
+  // log("newPostContentwithPfp2");
+  // log(newPostSpacingEmpty2);
 
   let newPostContentwithPfp = RsOk<HTMLElement>(
-    newPostSpacingEmpty2.nextElementSibling,
+    newPostSpacingEmpty2.nextSibling,
   );
-  log("newPostContentwithPfp2");
-  log(newPostSpacingEmpty2);
+  // log("newPostContentwithPfp2");
+  // log(newPostSpacingEmpty2);
 
-  let newPostPfp = RsOk<HTMLElement>(newPostContentwithPfp.firstElementChild);
-  log("newPostPfp");
-  log(newPostPfp);
+  let newPostPfp = RsOk<HTMLElement>(newPostContentwithPfp.firstChild);
+  // log("newPostPfp");
+  // log(newPostPfp);
 
-  let newPostPfpChild = RsOk<HTMLElement>(newPostPfp.firstElementChild);
-  log("newPostPfpChild");
-  log(newPostPfpChild);
+  let newPostPfpChild = RsOk<HTMLElement>(newPostPfp.firstChild);
+  // log("newPostPfpChild");
+  // log(newPostPfpChild);
 
-  let newPostPfpChildChild = RsOk<HTMLElement>(
-    newPostPfpChild.firstElementChild,
-  );
-  log("newPostPfpChildChild");
-  log(newPostPfpChildChild);
+  let newPostPfpChildChild = RsOk<HTMLElement>(newPostPfpChild.firstChild);
+  // log("newPostPfpChildChild");
+  // log(newPostPfpChildChild);
 
-  let newPostPfpAnchor = RsOk<HTMLElement>(
-    newPostPfpChildChild.firstElementChild,
-  );
-  log("newPostPfpAnchor");
-  log(newPostPfpAnchor);
+  let newPostPfpAnchor = RsOk<HTMLElement>(newPostPfpChildChild.firstChild);
+  // log("newPostPfpAnchor");
+  // log(newPostPfpAnchor);
   // newPostPfpAnchor: change href, aria label
 
-  let newPostPfpAnchorChild = RsOk<HTMLElement>(
-    newPostPfpAnchor.firstElementChild,
-  );
-  log("newPostPfpAnchorChild");
-  log(newPostPfpAnchorChild);
+  let newPostPfpAnchorChild = RsOk<HTMLElement>(newPostPfpAnchor.firstChild);
+  // log("newPostPfpAnchorChild");
+  // log(newPostPfpAnchorChild);
 
   let newPostPfpCircleBorder = RsOk<HTMLElement>(
-    newPostPfpAnchorChild.firstElementChild,
+    newPostPfpAnchorChild.firstChild,
   );
-  log("newPostPfpCircleBorder");
-  log(newPostPfpCircleBorder);
+  // log("newPostPfpCircleBorder");
+  // log(newPostPfpCircleBorder);
   // newPostPfpCircleBorder: change border color
 
   let newPostPfpAnchorBgImgDiv = RsOk<HTMLElement>(
-    newPostPfpCircleBorder.firstElementChild,
+    newPostPfpCircleBorder.firstChild,
   );
-  log("newPostPfpAnchorBgImgDiv");
-  log(newPostPfpAnchorBgImgDiv);
+  // log("newPostPfpAnchorBgImgDiv");
+  // log(newPostPfpAnchorBgImgDiv);
   // newPostPfpAnchorBgImgDiv: change style bgImage
 
   let newPostPfpAnchorImg = RsOk<HTMLElement>(
-    newPostPfpAnchorBgImgDiv.nextElementSibling,
+    newPostPfpAnchorBgImgDiv.nextSibling,
   );
-  log("newPostPfpAnchorImg");
-  log(newPostPfpAnchorImg);
+  // log("newPostPfpAnchorImg");
+  // log(newPostPfpAnchorImg);
   // newPostPfpAnchorImg: change img src
 
-  let newPostContent = RsOk<HTMLElement>(newPostPfp.nextElementSibling);
-  log("newPostContent");
-  log(newPostContent);
+  let newPostContent = RsOk<HTMLElement>(newPostPfp.nextSibling);
+  // log("newPostContent");
+  // log(newPostContent);
 
-  let newPostUserHandleDate = RsOk<HTMLElement>(
-    newPostContent.firstElementChild,
-  );
-  log("newPostUserHandleDate");
-  log(newPostUserHandleDate);
+  let newPostUserHandleDate = RsOk<HTMLElement>(newPostContent.firstChild);
+  // log("newPostUserHandleDate");
+  // log(newPostUserHandleDate);
 
-  let newPostUserHandle = RsOk<HTMLElement>(
-    newPostUserHandleDate.firstElementChild,
-  );
-  log("newPostUserHandle");
-  log(newPostUserHandle);
+  let newPostUserHandle = RsOk<HTMLElement>(newPostUserHandleDate.firstChild);
+  // log("newPostUserHandle");
+  // log(newPostUserHandle);
 
-  let newPostUserHandleChild = RsOk<HTMLElement>(
-    newPostUserHandle.firstElementChild,
-  );
-  log("newPostUserHandleChild");
-  log(newPostUserHandleChild);
+  let newPostUserHandleChild = RsOk<HTMLElement>(newPostUserHandle.firstChild);
+  // log("newPostUserHandleChild");
+  // log(newPostUserHandleChild);
 
   let newPostUserHandleChildChild = RsOk<HTMLElement>(
-    newPostUserHandleChild.firstElementChild,
+    newPostUserHandleChild.firstChild,
   );
-  log("newPostUserHandleChildChild");
-  log(newPostUserHandleChildChild);
+  // log("newPostUserHandleChildChild");
+  // log(newPostUserHandleChildChild);
 
   let newPostUserAnchor = RsOk<HTMLElement>(
-    newPostUserHandleChildChild.firstElementChild,
+    newPostUserHandleChildChild.firstChild,
   );
-  log("newPostUserAnchor");
-  log(newPostUserAnchor);
+  // log("newPostUserAnchor");
+  // log(newPostUserAnchor);
   // newPostUserAnchor: change href
 
-  let newPostUserSpan = RsOk<HTMLElement>(newPostUserAnchor.firstElementChild);
-  log("newPostUserSpan");
-  log(newPostUserSpan);
+  let newPostUserSpan = RsOk<HTMLElement>(newPostUserAnchor.firstChild);
+  // log("newPostUserSpan");
+  // log(newPostUserSpan);
   // newPostUserSpan: change inner text
 
-  let newPostHandleAnchor = RsOk<HTMLElement>(
-    newPostUserAnchor.nextElementSibling,
-  );
-  log("newPostHandleAnchor");
-  log(newPostHandleAnchor);
+  let newPostHandleAnchor = RsOk<HTMLElement>(newPostUserAnchor.nextSibling);
+  // log("newPostHandleAnchor");
+  // log(newPostHandleAnchor);
   // newPostHandleAnchor: change href
 
-  let newPostHandleSpan = RsOk<HTMLElement>(
-    newPostHandleAnchor.firstElementChild,
-  );
-  log("newPostHandleSpan");
-  log(newPostHandleSpan);
+  let newPostHandleSpan = RsOk<HTMLElement>(newPostHandleAnchor.firstChild);
+  // log("newPostHandleSpan");
+  // log(newPostHandleSpan);
   // newPostHandleSpan: change inner text
 
   let newPostDot = RsOk<HTMLElement>(newPostUserHandle.nextSibling);
-  log("newPostDot");
-  log(newPostDot);
+  // log("newPostDot");
+  // log(newPostDot);
   // newPostDate:
   // - change style display
 
   let newPostDate = RsOk<HTMLElement>(newPostDot.nextSibling);
-  log("newPostDate");
-  log(newPostDate);
+  // log("newPostDate");
+  // log(newPostDate);
   // newPostDate: change href, inner text
 
   let newPostInnerContentHider = RsOk<HTMLElement>(
-    newPostUserHandleDate.nextElementSibling,
+    newPostUserHandleDate.nextSibling,
   );
-  log("newPostInnerContentHider");
-  log(newPostInnerContentHider);
+  // log("newPostInnerContentHider");
+  // log(newPostInnerContentHider);
 
   let newPostInnerContentHiderChild = RsOk<HTMLElement>(
-    newPostInnerContentHider.firstElementChild,
+    newPostInnerContentHider.firstChild,
   );
-  log("newPostInnerContentHiderChild");
-  log(newPostInnerContentHiderChild);
+  // log("newPostInnerContentHiderChild");
+  // log(newPostInnerContentHiderChild);
 
   let newPostInnerContent = RsOk<HTMLElement>(
-    newPostInnerContentHiderChild.firstElementChild,
+    newPostInnerContentHiderChild.firstChild,
   );
-  log("newPostInnerContent");
-  log(newPostInnerContent);
+  // log("newPostInnerContent");
+  // log(newPostInnerContent);
   // newPostInnerContent: change inner content (html + media)
 
-  let newPostButtons = RsOk<HTMLElement>(
-    newPostInnerContentHider.nextElementSibling,
-  );
-  log("newPostButtons");
-  log(newPostButtons);
+  let newPostButtons = RsOk<HTMLElement>(newPostInnerContentHider.nextSibling);
+  // log("newPostButtons");
+  // log(newPostButtons);
 
-  let newReplyBtnFrame = RsOk<HTMLElement>(newPostButtons.firstElementChild);
-  log("newReplyBtnFrame");
-  log(newReplyBtnFrame);
+  let newReplyBtnFrame = RsOk<HTMLElement>(newPostButtons.firstChild);
+  // log("newReplyBtnFrame");
+  // log(newReplyBtnFrame);
 
-  let newReplyBtnInnerFrame = RsOk<HTMLElement>(
-    newReplyBtnFrame.firstElementChild,
-  );
-  log("newReplyBtnInnerFrame");
-  log(newReplyBtnInnerFrame);
+  let newReplyBtnInnerFrame = RsOk<HTMLElement>(newReplyBtnFrame.firstChild);
+  // log("newReplyBtnInnerFrame");
+  // log(newReplyBtnInnerFrame);
   // newReplyBtnInnerFrame: change reply button counts
 
-  let newRepostBtnFrame = RsOk<HTMLElement>(
-    newReplyBtnFrame.nextElementSibling,
-  );
-  log("newRepostBtnFrame");
-  log(newRepostBtnFrame);
+  let newRepostBtnFrame = RsOk<HTMLElement>(newReplyBtnFrame.nextSibling);
+  // log("newRepostBtnFrame");
+  // log(newRepostBtnFrame);
 
-  let newRepostBtnInnerFrame = RsOk<HTMLElement>(
-    newRepostBtnFrame.firstElementChild,
-  );
+  let newRepostBtnInnerFrame = RsOk<HTMLElement>(newRepostBtnFrame.firstChild);
 
-  log("newRepostBtnInnerFrame");
-  log(newRepostBtnInnerFrame);
+  // log("newRepostBtnInnerFrame");
+  // log(newRepostBtnInnerFrame);
   // newRepostBtnInnerFrame: change repost button counts
 
-  let newLikeBtnFrame = RsOk<HTMLElement>(newRepostBtnFrame.nextElementSibling);
-  log("newLikeBtnFrame");
-  log(newLikeBtnFrame);
+  let newLikeBtnFrame = RsOk<HTMLElement>(newRepostBtnFrame.nextSibling);
+  // log("newLikeBtnFrame");
+  // log(newLikeBtnFrame);
 
-  let newLikeBtnInnerFrame = RsOk<HTMLElement>(
-    newLikeBtnFrame.firstElementChild,
-  );
-  log("newLikeBtnInnerFrame");
-  log(newLikeBtnInnerFrame);
+  let newLikeBtnInnerFrame = RsOk<HTMLElement>(newLikeBtnFrame.firstChild);
+  // log("newLikeBtnInnerFrame");
+  // log(newLikeBtnInnerFrame);
   // newLiInnerkeBtn: change like button counts
 
   //// Hide ref content ----
@@ -229,8 +203,8 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
   // todo:
   // let defaultBorderColor = newPostPfpCircleBorder.style.borderColor;
   // let loadingBorderColor = newPostPfpCircleBorder.style.backgroundColor;
+  // newPostPfpCircleBorder.style.border = "0px solid black";
 
-  newPostPfpCircleBorder.style.border = "0px solid black";
   // newPostPfpAnchorBgImgDiv:
   //  - change style bgImage
   newPostPfpAnchorBgImgDiv.style.backgroundImage = "";
@@ -315,6 +289,7 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
   postContentPlaceholder.appendChild(postInnerContentPlaceholder.cloneNode());
   postContentPlaceholder.appendChild(postInnerContentPlaceholder);
 
+  //// show placeholder
   newPostContent.insertBefore(
     postContentPlaceholder,
     RsOk<Node>(newPostContent.firstChild),
@@ -324,46 +299,79 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
   newPostContent.setAttribute("atUri", atUri);
 
   // async insert data from embed
+  let uri = atUri.split("at://")[1];
+
   async function insertDataFromEmbed() {
     let iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.addEventListener("load", async () => {
-      let data: { [key: string]: string } | null = null;
+      let data: { [key: string]: EmbedData } | null = null;
+      let timer: Timer | null = null;
 
       let count = 0;
-      let findEmbedInStorageInterval: Timer | null;
-      async function findEmbedInStorage() {
+      function findEmbedInStorage() {
         count += 1;
+        // timeout
         if (count > 20) {
-          if (findEmbedInStorageInterval) {
-            clearInterval(findEmbedInStorageInterval);
-          }
+          clearInterval(RsOk<Timer>(timer));
+          err(`Timeout getting data for atUri ${atUri}`);
           return;
         }
+        // found
+        if (data != null && data != undefined) {
+          return data as { [key: string]: EmbedData };
+        }
+
         try {
-          data = await Browser.storage.local.get(atUri);
+          Browser.storage.local
+            .get(atUri)
+            .then((result: { [key: string]: EmbedData } | null) => {
+              if (result) {
+                data = result;
+              }
+            });
         } catch (e) {
-          err(`Error getting data ${e}`);
-        }
-        if (!data) {
-          return;
-        }
-        let value = data[atUri];
-        log(`Found stored embed for ${atUri}`);
-        let parser = new DOMParser();
-        let xmlDoc = parser.parseFromString(value, "text/html");
-
-        xmlDoc;
-
-        if (findEmbedInStorageInterval) {
-          clearInterval(findEmbedInStorageInterval);
+          err(`Error getting data for atUri ${atUri}:\n${e}`);
         }
       }
 
-      findEmbedInStorageInterval = setInterval(findEmbedInStorage, 500);
+      async function handleFoundEmbedData(foundData: {
+        [key: string]: EmbedData;
+      }) {
+        try {
+          newPostContent.removeChild(postContentPlaceholder);
+        } catch (e: any) {
+          err(e);
+        }
+        let embedData = foundData[atUri];
+        log(`Found stored embed for ${atUri}`);
+        log(embedData);
+        newPostPfpAnchor.setAttribute("href", embedData.user.href);
+        newPostPfpAnchor.setAttribute("aria-label", embedData.user.name);
+        newPostPfpAnchorBgImgDiv.style.backgroundImage = `url("${embedData.user.img}")`;
+        newPostPfpAnchorImg.setAttribute("src", embedData.user.img);
+        newPostUserAnchor.setAttribute("href", embedData.user.href);
+        newPostUserSpan.innerText = embedData.user.name;
+        newPostHandleAnchor.setAttribute("href", embedData.user.href);
+        newPostHandleSpan.innerText = embedData.user.handle;
+        newPostDot.style.display = "block";
+        let url = `${Config.bskyUrl}/profile/${uri}`;
+        newPostDate.setAttribute("href", url);
+        newPostDate.innerHTML = embedData.post.date;
+        newPostInnerContent.innerHTML =
+          embedData.post.content + embedData.post.embed;
+      }
+
+      timer = pollFind<{ [key: string]: EmbedData }>(
+        findEmbedInStorage,
+        handleFoundEmbedData,
+        500,
+      );
+
+      // done
     });
 
-    iframe.src = Url.getEmbed(atUri.split("at://")[1]);
+    iframe.src = Url.getEmbed(uri);
     bmPostItem.appendChild(iframe);
   }
 

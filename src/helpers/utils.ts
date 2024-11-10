@@ -95,4 +95,6 @@ export function pollFind<T>(
   }
 
   startInterval();
+
+  return RsOk<Timer>(timer);
 }

@@ -1,5 +1,5 @@
 import { State } from "../../helpers/config";
-import { pollFind } from "../../helpers/utils";
+import { err, pollFind } from "../../helpers/utils";
 import { RsOk } from "../../helpers/result";
 import { rootSelect } from "../../helpers/root";
 import { log } from "../../helpers/utils";
@@ -16,11 +16,17 @@ function findLikeBtn() {
 }
 
 function handleLikeBtn(likeBtn: HTMLElement) {
-  let postItemWithTopFrame = getPostItemRef(likeBtn);
-
-  let bmListDiv = postItemWithTopFrame[0];
-  let postItemRef = postItemWithTopFrame[1];
+  let postItemRef = getPostItemRef(likeBtn);
   postItemRef.style.display = "none";
+  let bmListDiv = RsOk<Element>(postItemRef.parentNode);
+
+  let postItemRefClone = postItemRef.cloneNode(true);
+
+  try {
+    bmListDiv.removeChild(postItemRef);
+  } catch (e: any) {
+    err(e);
+  }
 
   let bmListLastEmptyDiv = RsOk<Node>(bmListDiv.lastChild);
 
@@ -32,7 +38,7 @@ function handleLikeBtn(likeBtn: HTMLElement) {
       for (let atUri in bookmarks) {
         count += 1;
         log(`${count} - ${atUri}`);
-        let bmPostItem = createBmPostItem(atUri, postItemRef);
+        let bmPostItem = createBmPostItem(atUri, postItemRefClone);
         bmListDiv.insertBefore(bmPostItem, bmListLastEmptyDiv);
       }
     } else {
