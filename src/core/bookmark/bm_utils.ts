@@ -1,31 +1,13 @@
+import { Config } from "../../helpers/config";
 import { RsOk } from "../../helpers/result";
 import { log } from "../../helpers/utils";
 import { Url } from "./store_dm";
 
-export async function getEmbed(atUri: string): Promise<JSON> {
-  let resolveHandleUrl = Url.getEmbed(atUri);
-  try {
-    log(resolveHandleUrl);
-    const response = await fetch(resolveHandleUrl);
-    if (!response.ok) {
-      throw `response: ${response.status}`;
-    }
-    log("pass");
-    let body = response.body;
-    log(body);
-    let json = await response.json();
-    log(json);
-    return json;
-  } catch (error: any) {
-    throw `getEmbed: ${error}`;
+async function getDid(profileId: string) {
+  if (profileId.startsWith("did:plc:")) {
+    return profileId;
   }
-}
-
-async function getDid(atProtoHandle: string) {
-  if (atProtoHandle.startsWith("did:plc:")) {
-    return atProtoHandle;
-  }
-  let resolveHandleUrl = Url.resolveHandle(atProtoHandle);
+  let resolveHandleUrl = Url.resolveHandle(profileId);
   try {
     const response = await fetch(resolveHandleUrl);
     if (!response.ok) {
@@ -50,10 +32,10 @@ async function getAtUri(postUrl: string) {
     throw "bmBtnOnClick: invalid splitPostFromUrl.length";
   }
 
-  let atProtoHandle = RsOk<string>(splitPostFromUrl[0]);
+  let profileId = RsOk<string>(splitPostFromUrl[0]);
   let postId = RsOk<string>(splitPostFromUrl[1]);
 
-  let did = await getDid(atProtoHandle);
+  let did = await getDid(profileId);
 
   return `at://${did}/app.bsky.feed.post/${postId}`;
 }
@@ -61,20 +43,20 @@ async function getAtUri(postUrl: string) {
 export async function getPostAtUri(postBody: Element) {
   let atUri = postBody.getAttribute("atUri");
   if (!atUri) {
-    atUri = await getAtUri(getPostUrl(postBody));
+    atUri = await getAtUri(await getPostUrl(postBody));
   }
   postBody.setAttribute("atUri", atUri);
   return atUri;
 }
 
-function getPostUrl(postBody: Element) {
+async function getPostUrl(postBody: Element) {
   let postUrl = postBody.getAttribute("postUrl");
   if (postUrl) {
     return postUrl;
   }
 
   function hasProfile(href: string) {
-    return href.indexOf("/profile/") > -1;
+    return href.startsWith(`${Config.bskyUrl}/profile/`);
   }
 
   function hasPost(href: string) {
@@ -111,11 +93,23 @@ function getPostUrl(postBody: Element) {
     let postHead = RsOk<HTMLElement>(postBody.firstChild);
     let anchor = RsOk<HTMLAnchorElement>(postHead.querySelector("a"));
     if (hasProfile(anchor.href)) {
-      if (windowUrl.indexOf(anchor.href) > -1) {
-        return windowUrl;
+      let anchorRight = anchor.href.split("/profile/")[1];
+      if (anchorRight.indexOf("/") < 0) {
+        let profileId = anchorRight;
+        let windowUrlRight = windowUrl.split("/profile/")[1];
+
+        let windowProfileId = windowUrlRight.split("/")[0];
+        if (windowProfileId === profileId) {
+          return windowUrl;
+        } else if (windowProfileId.startsWith("did:plc:")) {
+          let did = await getDid(profileId);
+          if (windowProfileId === did) {
+            return windowUrl;
+          }
+        }
       }
     }
   }
 
-  throw "no post url";
+  throw "No post url";
 }

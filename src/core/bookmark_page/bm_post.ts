@@ -339,6 +339,7 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
             .then((result: { [key: string]: EmbedData } | null) => {
               if (result && result[atUri]) {
                 value = result[atUri];
+                Browser.storage.local.remove(atUri);
               }
             });
         } catch (e) {
@@ -421,8 +422,10 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
           // fix embed style
           //
           if (embedDiv.children.length == 2) {
-            let descDiv = RsOk<Element>(embedDiv.lastChild);
+            let descDiv = RsOk<HTMLElement>(embedDiv.lastChild);
             if (descDiv.children.length == 3) {
+              descDiv.removeAttribute("class");
+              descDiv.style.padding = "8px";
               let embedUrlTitle = descDiv.children[0].innerHTML;
               let embedTitle = descDiv.children[1].innerHTML;
               let embedDesc = descDiv.children[2].innerHTML;
@@ -445,7 +448,7 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
 
               let urlTitleDiv = document.createElement("div");
               urlTitleDiv.innerHTML = embedUrlTitle;
-              urlTitleDiv.style.fontSize = "60%";
+              urlTitleDiv.style.fontSize = "70%";
 
               descDiv.replaceChild(titleDescDiv, descDiv.children[0]);
               descDiv.replaceChild(sepDiv, descDiv.children[1]);

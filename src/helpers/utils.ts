@@ -50,11 +50,9 @@ export function waitElement(selector: string) {
         if (obs) {
           obs.disconnect();
         }
-        log(`${selector} found`);
         resolve(el);
         return true;
       } else {
-        log(`${selector} not found`);
         return false;
       }
     }

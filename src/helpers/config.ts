@@ -3,7 +3,7 @@ import type { BookmarkStorage } from "../core/bookmark/interface";
 export const Config = {
   bskyUrl: "https://bsky.app",
   bookmarkPageUrlAlias: "/bookmarks",
-  handleResolverUrl: "https://bsky.social",
+  handleResolverUrl: "https://api.bsky.app",
   embedUrl: "https://embed.bsky.app/embed",
 };
 
