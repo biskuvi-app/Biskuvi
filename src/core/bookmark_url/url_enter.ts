@@ -8,14 +8,16 @@ import { pollNavigateAway } from "./url_away";
 export function pollEnterPage() {
   BookmarkUrlState.hasEntered = false;
   BookmarkUrlState.hasNavigatedAway = false;
-  pollFind(findEnterPage, handleEnterPage, 250);
+  pollFind(findEnterPage, handleEnterPage, 500);
 }
 
 function handleEnterPage() {
-  BookmarkUrlState.hasEntered = true;
-  history.replaceState(null, "", Config.bookmarkPageUrlAlias);
-  insertBookmarksPage();
-  pollNavigateAway();
+  if (!BookmarkUrlState.hasEntered) {
+    BookmarkUrlState.hasEntered = true;
+    history.replaceState(null, "", Config.bookmarkPageUrlAlias);
+    insertBookmarksPage();
+    pollNavigateAway();
+  }
 }
 
 function findEnterPage() {

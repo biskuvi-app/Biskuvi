@@ -1,4 +1,6 @@
 import { Browser } from "../../helpers/browser";
+import { CssVars } from "../../helpers/constant";
+import { shortEnglishHumanizer } from "../../helpers/datetime";
 import { RsOk } from "../../helpers/result";
 import type { EmbedData } from "../../helpers/type";
 import { waitElement, log } from "../../helpers/utils";
@@ -47,6 +49,15 @@ export async function handleEmbedPage() {
 
     let replyPara = RsOk<HTMLElement>(spacer.nextSibling);
 
+    let duration = shortEnglishHumanizer(
+      new Date().getTime() - new Date(dateTime.dateTime).getTime(),
+      { spacer: "" },
+    );
+
+    if (duration.indexOf(",") > -1) {
+      duration = duration.split(",")[0];
+    }
+
     let embedData: EmbedData = {
       user: {
         href: headerPfpAnchor.href,
@@ -56,8 +67,10 @@ export async function handleEmbedPage() {
       },
       post: {
         date: dateTime.dateTime,
-        content: text.getHTML(),
-        embed: embed.getHTML(),
+        formattedDate: dateTime.innerText.trim(),
+        duration: duration,
+        content: text.innerHTML,
+        embed: embed.outerHTML,
       },
       buttons: {
         replies: replyPara.innerText.trim(),

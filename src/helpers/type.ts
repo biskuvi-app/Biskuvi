@@ -6,7 +6,9 @@ export type EmbedData = {
     img: string;
   };
   post: {
-    date: string; // convert
+    date: string;
+    formattedDate: string;
+    duration: string;
     content: string;
     embed: string;
   };

@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "js": ["scripts/main.js"],
-      "css": ["assets/css/biskuvi.css"],
+      "css": ["assets/css/biskuvi.css", "assets/css/embed.css"],
       "matches": ["https://bsky.app/*", "https://embed.bsky.app/*"],
       "all_frames": true
     }

@@ -15,5 +15,9 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/humanize-duration": "^3.27.4",
+    "humanize-duration": "^3.32.1"
   }
 }

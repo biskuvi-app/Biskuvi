@@ -7,7 +7,8 @@ import type { BookmarkStorage } from "../bookmark/interface";
 import { bmBtnOnClick } from "./bm_btn_onclick";
 
 export async function createBmBtnWithFrame(likeBtnWFrame: Node) {
-  let bmBtnFrame = likeBtnWFrame.cloneNode(true);
+  let bmBtnFrame = likeBtnWFrame.cloneNode(true) as HTMLElement;
+  bmBtnFrame.style.opacity = "1";
   let bmBtn = RsOk<HTMLElement>(bmBtnFrame.firstChild);
   bmBtn.style.display = "none";
   bmBtn.setAttribute("aria-label", locale("Bookmark"));

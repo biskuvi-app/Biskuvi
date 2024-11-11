@@ -22,6 +22,9 @@ export async function getEmbed(atUri: string): Promise<JSON> {
 }
 
 async function getDid(atProtoHandle: string) {
+  if (atProtoHandle.startsWith("did:plc:")) {
+    return atProtoHandle;
+  }
   let resolveHandleUrl = Url.resolveHandle(atProtoHandle);
   try {
     const response = await fetch(resolveHandleUrl);

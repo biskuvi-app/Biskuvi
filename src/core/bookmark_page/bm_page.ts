@@ -18,9 +18,9 @@ function findLikeBtn() {
 function handleLikeBtn(likeBtn: HTMLElement) {
   let postItemRef = getPostItemRef(likeBtn);
   postItemRef.style.display = "none";
-  let bmListDiv = RsOk<Element>(postItemRef.parentNode);
+  let bmListDiv = RsOk<HTMLElement>(postItemRef.parentNode);
 
-  let postItemRefClone = postItemRef.cloneNode(true);
+  let postItemRefClone = postItemRef.cloneNode(true) as HTMLElement;
 
   try {
     bmListDiv.removeChild(postItemRef);
@@ -38,6 +38,9 @@ function handleLikeBtn(likeBtn: HTMLElement) {
       for (let atUri in bookmarks) {
         count += 1;
         log(`${count} - ${atUri}`);
+        if (count == 2) {
+          postItemRefClone.style.borderColor = bmListDiv.style.borderColor;
+        }
         let bmPostItem = createBmPostItem(atUri, postItemRefClone);
         bmListDiv.insertBefore(bmPostItem, bmListLastEmptyDiv);
       }

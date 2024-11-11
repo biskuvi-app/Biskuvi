@@ -1,10 +1,11 @@
 import { Browser } from "../../helpers/browser";
-import { Config } from "../../helpers/config";
+import { Config, State } from "../../helpers/config";
 import { CssVars } from "../../helpers/constant";
 import { RsOk } from "../../helpers/result";
 import type { EmbedData } from "../../helpers/type";
 import { log, err, pollFind } from "../../helpers/utils";
 import { Url } from "../bookmark/store_dm";
+import { BookmarkUrlState } from "../bookmark_url/state";
 
 export function createBmPostItem(atUri: string, postItemRef: Node) {
   let bmPostItem = postItemRef.cloneNode(true) as HTMLElement;
@@ -188,7 +189,17 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
   let newLikeBtnInnerFrame = RsOk<HTMLElement>(newLikeBtnFrame.firstChild);
   // log("newLikeBtnInnerFrame");
   // log(newLikeBtnInnerFrame);
-  // newLiInnerkeBtn: change like button counts
+  // newLikeBtnInnerFrame: change like button counts
+
+  let newDropdownBtnFrame = RsOk<HTMLElement>(newLikeBtnFrame.nextSibling);
+  // log("newDropdownBtnFrame");
+  // log(newDropdownBtnFrame);
+
+  let newDropdownBtnInnerFrame = RsOk<HTMLElement>(
+    newDropdownBtnFrame.firstChild,
+  );
+  // log("newDropdownBtnInnerFrame");
+  // log(newDropdownBtnInnerFrame);
 
   //// Hide ref content ----
 
@@ -247,25 +258,25 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
   if (newReplyBtnInnerFrame.children.length == 2) {
     RsOk<HTMLElement>(newReplyBtnInnerFrame.lastChild).style.display = "none";
   }
-  let newReplyBtnIconFrame = RsOk<HTMLElement>(
-    newReplyBtnInnerFrame.firstChild,
-  );
+  newReplyBtnFrame.style.opacity = "0.5";
 
   // newRepostBtn:
   //  - change repost button counts
   if (newRepostBtnInnerFrame.children.length == 2) {
     RsOk<HTMLElement>(newRepostBtnInnerFrame.lastChild).style.display = "none";
   }
-  let newRepostBtnIconFrame = RsOk<HTMLElement>(
-    newRepostBtnInnerFrame.firstChild,
-  );
+  newRepostBtnFrame.style.opacity = "0.5";
 
   // newLikeBtn:
   //  - change like button counts
   if (newLikeBtnInnerFrame.children.length == 2) {
     RsOk<HTMLElement>(newLikeBtnInnerFrame.lastChild).style.display = "none";
   }
-  let newLikeBtnIconFrame = RsOk<HTMLElement>(newLikeBtnInnerFrame.firstChild);
+  newLikeBtnFrame.style.opacity = "0.5";
+  newLikeBtnInnerFrame.classList.remove("bd");
+
+  // newDropdownBtnFrame
+  newDropdownBtnFrame.style.opacity = "0.5";
 
   //// Show placeholder content ----
   // newPostUserHandle
@@ -305,29 +316,29 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
     let iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.addEventListener("load", async () => {
-      let data: { [key: string]: EmbedData } | null = null;
+      let value: EmbedData | null = null;
       let timer: Timer | null = null;
 
       let count = 0;
       function findEmbedInStorage() {
         count += 1;
         // timeout
-        if (count > 20) {
+        if (count > 50) {
           clearInterval(RsOk<Timer>(timer));
           err(`Timeout getting data for atUri ${atUri}`);
           return;
         }
         // found
-        if (data != null && data != undefined) {
-          return data as { [key: string]: EmbedData };
+        if (value && value.user && value.post) {
+          return value;
         }
 
         try {
           Browser.storage.local
             .get(atUri)
             .then((result: { [key: string]: EmbedData } | null) => {
-              if (result) {
-                data = result;
+              if (result && result[atUri]) {
+                value = result[atUri];
               }
             });
         } catch (e) {
@@ -335,40 +346,119 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
         }
       }
 
-      async function handleFoundEmbedData(foundData: {
-        [key: string]: EmbedData;
-      }) {
+      async function handleFoundEmbedData(embedData: EmbedData) {
         try {
           newPostContent.removeChild(postContentPlaceholder);
         } catch (e: any) {
           err(e);
         }
-        let embedData = foundData[atUri];
         log(`Found stored embed for ${atUri}`);
         log(embedData);
-        newPostPfpAnchor.setAttribute("href", embedData.user.href);
+
+        let atUriSplit = atUri.split("/");
+        let postId = atUriSplit[atUriSplit.length - 1];
+        let profileUrl = `/profile/${embedData.user.handle.replace("@", "")}`;
+        let postUrl = `${profileUrl}/post/${postId}`;
+
+        bmPostItem.style.borderTopWidth = "1px";
+        bmPostItem.classList.add("bm");
+        bmPostItem.onclick = (e) => {
+          function newTab() {
+            return RsOk<WindowProxy>(window.open(postUrl, "_blank"));
+          }
+          switch (e.button) {
+            case 0:
+              if (e.ctrlKey) {
+                newTab();
+              } else {
+                history.replaceState(
+                  null,
+                  "",
+                  RsOk<string>(State.bookmarkPageUrl),
+                );
+                window.location.href = postUrl;
+              }
+
+              break;
+            case 1:
+              let wp = newTab();
+              if (e.shiftKey) {
+                wp.focus();
+              }
+              break;
+          }
+        };
+
+        newPostPfpAnchor.setAttribute("href", profileUrl);
         newPostPfpAnchor.setAttribute("aria-label", embedData.user.name);
         newPostPfpAnchorBgImgDiv.style.backgroundImage = `url("${embedData.user.img}")`;
         newPostPfpAnchorImg.setAttribute("src", embedData.user.img);
-        newPostUserAnchor.setAttribute("href", embedData.user.href);
+        newPostUserAnchor.setAttribute("href", profileUrl);
         newPostUserSpan.innerText = embedData.user.name;
-        newPostHandleAnchor.setAttribute("href", embedData.user.href);
-        newPostHandleSpan.innerText = embedData.user.handle;
+        newPostHandleAnchor.setAttribute("href", profileUrl);
+        newPostHandleSpan.innerText = "\xa0‪" + embedData.user.handle;
         newPostDot.style.display = "block";
-        let url = `${Config.bskyUrl}/profile/${uri}`;
-        newPostDate.setAttribute("href", url);
-        newPostDate.innerHTML = embedData.post.date;
-        newPostInnerContent.innerHTML =
-          embedData.post.content + embedData.post.embed;
+        newPostDate.setAttribute("href", postUrl);
+        newPostDate.setAttribute("datetime", embedData.post.date);
+        newPostDate.setAttribute("data-tooltip", embedData.post.formattedDate);
+        newPostDate.setAttribute("aria-label", embedData.post.formattedDate);
+        newPostDate.innerHTML = embedData.post.duration;
+
+        let contentDiv = document.createElement("div");
+        contentDiv.style.paddingBottom = "2px";
+        contentDiv.style.paddingRight = "8px";
+        contentDiv.innerHTML = embedData.post.content;
+        newPostInnerContent.appendChild(contentDiv);
+
+        if (embedData.post.embed) {
+          let borderStyle = `1px solid ${RsOk<HTMLElement>(bmPostItem.parentNode).style.borderColor}`;
+          let embedDiv = document.createElement("div");
+          embedDiv.innerHTML = embedData.post.embed;
+          embedDiv = RsOk<HTMLDivElement>(embedDiv.firstChild);
+          if (embedDiv.classList.contains("border")) {
+            embedDiv.classList.remove("border");
+            embedDiv.style.border = borderStyle;
+          }
+
+          // fix embed style
+          //
+          if (embedDiv.children.length == 2) {
+            let descDiv = RsOk<Element>(embedDiv.lastChild);
+            if (descDiv.children.length == 3) {
+              let first = descDiv.children[0];
+              let second = descDiv.children[1];
+              let third = descDiv.children[2];
+
+              let newFirst = document.createElement("div");
+              newFirst.style.fontSize = "0.5em";
+              newFirst.innerHTML = first.innerHTML;
+
+              let newSecond = document.createElement("div");
+              newSecond.style.fontWeight = "600";
+              newSecond.innerHTML = second.innerHTML;
+
+              let newThird = document.createElement("div");
+              newFirst.style.fontSize = "0.5em";
+              newThird.innerHTML = third.innerHTML;
+
+              let sepDiv = document.createElement("div");
+              sepDiv.style.border = borderStyle;
+
+              descDiv.replaceChild(newSecond, first);
+              descDiv.replaceChild(newThird, second);
+              descDiv.replaceChild(newFirst, third);
+              descDiv.insertBefore(sepDiv, newFirst);
+            }
+          }
+          newPostInnerContent.appendChild(embedDiv);
+        }
       }
 
-      timer = pollFind<{ [key: string]: EmbedData }>(
+      timer = pollFind<EmbedData>(
         findEmbedInStorage,
         handleFoundEmbedData,
         500,
       );
-
-      // done
     });
 
     iframe.src = Url.getEmbed(uri);
