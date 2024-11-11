@@ -1,14 +1,36 @@
 import { State } from "../../helpers/config";
-import { err, pollFind } from "../../helpers/utils";
+import { err, pollFind, waitElement } from "../../helpers/utils";
 import { RsOk } from "../../helpers/result";
 import { rootSelect } from "../../helpers/root";
 import { log } from "../../helpers/utils";
 import type { BookmarkStorage } from "../bookmark/interface";
 import { createBmPostItem } from "./bm_post";
 import { getPostItemRef } from "./bm_post_ref";
+import { locale } from "../../helpers/locale";
 
 export async function insertBookmarksPage() {
   pollFind(findLikeBtn, handleLikeBtn, 500);
+
+  waitElement("button[data-testid='likeBtn']").then((div) => {
+    let postItemRef = getPostItemRef(div);
+    postItemRef.style.display = "none";
+  });
+
+  waitElement("div[role=tab]").then((div) => {
+    RsOk<HTMLElement>(div.parentNode).style.display = "none";
+  });
+
+  waitElement("button[data-testid=pinBtn]").then((div) => {
+    let btns = RsOk<HTMLElement>(div.parentNode);
+    let panel = RsOk<HTMLElement>(btns.parentNode);
+    panel.style.paddingTop = "8px";
+    panel.style.paddingBottom = "8px";
+    panel.style.paddingLeft = "16px";
+    panel.style.paddingRight = "16px";
+    panel.style.fontSize = "150%";
+    panel.style.fontWeight = "600";
+    panel.innerText = locale("Bookmarks");
+  });
 }
 
 function findLikeBtn() {
@@ -17,13 +39,14 @@ function findLikeBtn() {
 
 function handleLikeBtn(likeBtn: HTMLElement) {
   let postItemRef = getPostItemRef(likeBtn);
-  postItemRef.style.display = "none";
   let bmListDiv = RsOk<HTMLElement>(postItemRef.parentNode);
 
   let postItemRefClone = postItemRef.cloneNode(true) as HTMLElement;
 
   try {
-    bmListDiv.removeChild(postItemRef);
+    for (let child of postItemRef.children) {
+      postItemRef.removeChild(child);
+    }
   } catch (e: any) {
     err(e);
   }

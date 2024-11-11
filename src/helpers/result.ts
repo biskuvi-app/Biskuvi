@@ -15,3 +15,10 @@ export function RsOk<T>(o: any, message?: string): T {
   }
   return o;
 }
+
+export function RsOr<T>(o: any, or: any): T {
+  if (o == null || o == undefined) {
+    return RsOk<T>(or);
+  }
+  return o;
+}

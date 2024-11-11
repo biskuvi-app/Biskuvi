@@ -1,6 +1,6 @@
 import { Browser } from "../../helpers/browser";
 import { shortEnglishHumanizer } from "../../helpers/datetime";
-import { RsOk } from "../../helpers/result";
+import { RsOk, RsOr } from "../../helpers/result";
 import type { EmbedData } from "../../helpers/type";
 import { waitElement, log } from "../../helpers/utils";
 
@@ -37,18 +37,20 @@ export async function handleEmbedPage() {
       // date
       let dateTime = RsOk<HTMLTimeElement>(dateTimeAnchor.firstChild);
 
+      let emptyDiv = document.createElement("div");
+
       // buttons
-      let likeBtnFrame = RsOk<Node>(buttons.firstChild);
-      let likeIcon = RsOk<Node>(likeBtnFrame.firstChild);
-      let likeCount = RsOk<HTMLElement>(likeIcon.nextSibling);
+      let likeBtnFrame = RsOr<Node>(buttons.firstChild, emptyDiv);
+      let likeIcon = RsOr<Node>(likeBtnFrame.firstChild, emptyDiv);
+      let likeCount = RsOr<HTMLElement>(likeIcon.nextSibling, emptyDiv);
 
-      let repostBtnFrame = RsOk<Node>(likeBtnFrame.nextSibling);
-      let repostIcon = RsOk<Node>(repostBtnFrame.firstChild);
-      let repostCount = RsOk<HTMLElement>(repostIcon.nextSibling);
+      let repostBtnFrame = RsOr<Node>(likeBtnFrame.nextSibling, emptyDiv);
+      let repostIcon = RsOr<Node>(repostBtnFrame.firstChild, emptyDiv);
+      let repostCount = RsOr<HTMLElement>(repostIcon.nextSibling, emptyDiv);
 
-      let spacer = RsOk<Node>(repostBtnFrame.nextSibling);
+      let spacer = RsOr<Node>(repostBtnFrame.nextSibling, emptyDiv);
 
-      let replyPara = RsOk<HTMLElement>(spacer.nextSibling);
+      let replyPara = RsOr<HTMLElement>(spacer.nextSibling, emptyDiv);
 
       let duration = shortEnglishHumanizer(
         new Date().getTime() - new Date(dateTime.dateTime).getTime(),
@@ -86,10 +88,8 @@ export async function handleEmbedPage() {
       log(`Stored atUri embed: ${atUri}`);
     } else {
       let uriSplit = uri.split("/");
-      let postId = uriSplit[uriSplit.length - 1];
       let handle = uriSplit[0];
       let profileUrl = `/profile/${handle}`;
-      let postUrl = `${profileUrl}/post/${postId}`;
       let embedData: EmbedData = {
         user: {
           href: profileUrl,

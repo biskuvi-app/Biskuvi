@@ -4,16 +4,37 @@ html {
 }
 html.theme--light {
     --btnText: rgb(111, 134, 159);
+    --embedBorder: rgb(111, 134, 159);
     --btnHover: rgb(241, 243, 245);
+    --postHover: rgba(241, 243, 245, 0.5);
 }
 html.theme--dark {
     --btnText: rgb(111, 134, 159);
+    --embedBorder: rgb(111, 134, 159);
     --btnHover: rgb(20, 27, 35);
+    --postHover: rgba(20, 27, 35, 0.5);
 }
 html.theme--dim {
     --btnText: rgb(120, 142, 165);
+    --embedBorder: rgb(120, 142, 165);
     --btnHover: rgb(30, 41, 54);
+    --postHover: rgba(30, 41, 54, 0.5);
 }
 .bm:hover {
     background-color: var(--btnHover);
+}
+.bp:hover {
+    background-color: var(--postHover);
+}
+/* .bt {
+    color: var(--embedBorder);
+}
+.bt:hover {
+    color: var(--btnText);
+} */
+.be {
+    border: 1px solid var(--embedBorder);
+}
+.be:hover {
+    border-color: var(--btnText);
 }

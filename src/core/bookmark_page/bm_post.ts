@@ -360,7 +360,7 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
         let postUrl = `${profileUrl}/post/${postId}`;
 
         bmPostItem.style.borderTopWidth = "1px";
-        bmPostItem.classList.add("bm");
+        bmPostItem.classList.add("bp");
         bmPostItem.onclick = (e) => {
           function newTab() {
             return RsOk<WindowProxy>(window.open(postUrl, "_blank"));
@@ -410,13 +410,21 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
         newPostInnerContent.appendChild(contentDiv);
 
         if (embedData.post.embed) {
-          let borderStyle = `1px solid ${RsOk<HTMLElement>(bmPostItem.parentNode).style.borderColor}`;
+          let embedBorderColor = RsOk<HTMLElement>(bmPostItem.parentNode).style
+            .borderColor;
           let embedDiv = document.createElement("div");
           embedDiv.innerHTML = embedData.post.embed;
           embedDiv = RsOk<HTMLDivElement>(embedDiv.firstChild);
           if (embedDiv.classList.contains("border")) {
             embedDiv.classList.remove("border");
-            embedDiv.style.border = borderStyle;
+            embedDiv.classList.add("be");
+            let style = getComputedStyle(document.body);
+            if (style.getPropertyValue("--embedBorder") !== embedBorderColor) {
+              document.documentElement.setAttribute(
+                "style",
+                `--embedBorder: ${embedBorderColor}`,
+              );
+            }
           }
 
           // fix embed style
@@ -442,7 +450,7 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
               titleDescDiv.appendChild(innerDesc);
 
               let sepDiv = document.createElement("div");
-              sepDiv.style.border = borderStyle;
+              sepDiv.style.border = `1px solid ${embedBorderColor}`;
               sepDiv.style.marginTop = "4px";
               sepDiv.style.marginBottom = "4px";
 
