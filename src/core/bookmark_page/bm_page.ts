@@ -1,5 +1,10 @@
 import { State } from "../../helpers/config";
-import { err, pollFind, waitElement } from "../../helpers/utils";
+import {
+  err,
+  getScrollProgress,
+  pollFind,
+  waitElement,
+} from "../../helpers/utils";
 import { RsOk } from "../../helpers/result";
 import { rootSelect } from "../../helpers/root";
 import { log } from "../../helpers/utils";
@@ -41,6 +46,18 @@ function handleLikeBtn(likeBtn: HTMLElement) {
   let postItemRef = getPostItemRef(likeBtn);
   let bmListDiv = RsOk<HTMLElement>(postItemRef.parentNode);
 
+  if (!State.cssIsSet) {
+    State.cssIsSet = true;
+    let postBorderColor = bmListDiv.style.borderColor;
+    let style = getComputedStyle(document.body);
+    if (style.getPropertyValue("--postBorder") !== postBorderColor) {
+      document.documentElement.setAttribute(
+        "style",
+        `--postBorder: ${postBorderColor}`,
+      );
+    }
+  }
+
   let postItemRefClone = postItemRef.cloneNode(true) as HTMLElement;
 
   try {
@@ -51,22 +68,66 @@ function handleLikeBtn(likeBtn: HTMLElement) {
     err(e);
   }
 
-  let bmListLastEmptyDiv = RsOk<Node>(bmListDiv.lastChild);
+  let bmListLastEmptyDiv = RsOk<HTMLElement>(bmListDiv.lastChild);
 
   function insertBookmarks(
     bookmarks: { [keys: string]: string } | undefined | null,
   ) {
     if (bookmarks) {
+      let keys = Object.keys(bookmarks);
+      let length = keys.length;
+      log(`Found${length} bookmarks`);
+
       let count = 0;
-      for (let atUri in bookmarks) {
-        count += 1;
-        log(`${count} - ${atUri}`);
-        if (count == 2) {
-          postItemRefClone.style.borderColor = bmListDiv.style.borderColor;
+      let take = 5;
+
+      let lastScroll = new Date();
+      let done = false;
+
+      function insertTakenBookmarks() {
+        for (let i = 0; i < take && count < length; i++) {
+          let atUri = keys[i + count];
+          count += 1;
+          log(`${count} - ${atUri}`);
+
+          if (count == 2) {
+            postItemRefClone.style.borderColor = bmListDiv.style.borderColor;
+          }
+
+          let bmPostItem = createBmPostItem(atUri, postItemRefClone);
+          bmListDiv.insertBefore(bmPostItem, bmListLastEmptyDiv);
         }
-        let bmPostItem = createBmPostItem(atUri, postItemRefClone);
-        bmListDiv.insertBefore(bmPostItem, bmListLastEmptyDiv);
       }
+      insertTakenBookmarks();
+
+      document.addEventListener("scroll", (event) => {
+        if (count < length) {
+          let progress = getScrollProgress();
+          log(progress);
+          if (progress > 0.85) {
+            let newLastScroll = new Date();
+            let duration = newLastScroll.getSeconds() - lastScroll.getSeconds();
+            lastScroll = newLastScroll;
+            if (duration > 2.5) {
+              log(`Take at ${count}, ${length}`);
+              insertTakenBookmarks();
+            }
+          }
+        } else {
+          if (!done) {
+            done = true;
+            bmListLastEmptyDiv.style.textAlign = "center";
+            bmListLastEmptyDiv.style.color = "var(--btnText)";
+            bmListLastEmptyDiv.style.paddingTop = "12px";
+            bmListLastEmptyDiv.style.paddingBottom = "12px";
+            bmListLastEmptyDiv.style.marginBottom = "24px";
+            bmListLastEmptyDiv.style.borderTop = "1px";
+            bmListLastEmptyDiv.style.borderStyle = "solid";
+            bmListLastEmptyDiv.style.borderColor = "var(--postBorder)";
+            bmListLastEmptyDiv.innerText = "No new bookmarks";
+          }
+        }
+      });
     } else {
       log("No bookmarks");
     }

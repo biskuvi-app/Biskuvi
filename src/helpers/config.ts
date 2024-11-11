@@ -17,4 +17,5 @@ export const State = {
   bookmarkPageUrl: null as string | null,
   locale: "en",
   polls: {},
+  cssIsSet: false,
 };

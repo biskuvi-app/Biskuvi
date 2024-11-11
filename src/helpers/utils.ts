@@ -1,4 +1,3 @@
-import { BookmarkUrlState } from "../core/bookmark_url/state";
 import { State } from "./config";
 import { RsOk } from "./result";
 
@@ -95,4 +94,16 @@ export function pollFind<T>(
   startInterval();
 
   return RsOk<Timer>(timer);
+}
+
+export function getScrollProgress() {
+  let docEl = document.documentElement;
+  let docBody = document.body;
+  let docElScrTop = docEl.scrollTop;
+  let docElScrHeight = docEl.scrollHeight;
+  let docBodyScrTop = docBody.scrollTop;
+  let docBodyScrHeight = docBody.scrollHeight;
+  let rTop = docElScrTop || docBodyScrTop;
+  let rHeight = docElScrHeight || docBodyScrHeight;
+  return rTop / (rHeight - docEl.clientHeight);
 }

@@ -9,7 +9,6 @@ import { BookmarkUrlState } from "../bookmark_url/state";
 
 export function createBmPostItem(atUri: string, postItemRef: Node) {
   let bmPostItem = postItemRef.cloneNode(true) as HTMLElement;
-
   //// querySelector wont work, use firstChild or similar method instead
 
   bmPostItem.style.display = "block";
@@ -410,21 +409,12 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
         newPostInnerContent.appendChild(contentDiv);
 
         if (embedData.post.embed) {
-          let embedBorderColor = RsOk<HTMLElement>(bmPostItem.parentNode).style
-            .borderColor;
           let embedDiv = document.createElement("div");
           embedDiv.innerHTML = embedData.post.embed;
           embedDiv = RsOk<HTMLDivElement>(embedDiv.firstChild);
           if (embedDiv.classList.contains("border")) {
             embedDiv.classList.remove("border");
             embedDiv.classList.add("be");
-            let style = getComputedStyle(document.body);
-            if (style.getPropertyValue("--embedBorder") !== embedBorderColor) {
-              document.documentElement.setAttribute(
-                "style",
-                `--embedBorder: ${embedBorderColor}`,
-              );
-            }
           }
 
           // fix embed style
@@ -433,7 +423,10 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
             let descDiv = RsOk<HTMLElement>(embedDiv.lastChild);
             if (descDiv.children.length == 3) {
               descDiv.removeAttribute("class");
-              descDiv.style.padding = "8px";
+              descDiv.style.paddingTop = "8px";
+              descDiv.style.paddingBottom = "4px";
+              descDiv.style.paddingLeft = "12px";
+              descDiv.style.paddingRight = "12px";
               let embedUrlTitle = descDiv.children[0].innerHTML;
               let embedTitle = descDiv.children[1].innerHTML;
               let embedDesc = descDiv.children[2].innerHTML;
@@ -450,7 +443,7 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
               titleDescDiv.appendChild(innerDesc);
 
               let sepDiv = document.createElement("div");
-              sepDiv.style.border = `1px solid ${embedBorderColor}`;
+              sepDiv.style.border = `1px solid var(--postBorder)`;
               sepDiv.style.marginTop = "4px";
               sepDiv.style.marginBottom = "4px";
 
