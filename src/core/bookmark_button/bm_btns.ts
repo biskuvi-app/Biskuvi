@@ -1,4 +1,4 @@
-import { log, pollFind } from "../../helpers/utils";
+import { err, log, pollFind } from "../../helpers/utils";
 import { RsOk } from "../../helpers/result";
 import { rootSelectAll } from "../../helpers/root";
 import { createBmBtnWithFrame } from "./bm_btn_with_frame";
@@ -25,7 +25,12 @@ function insertBmBtns(likeBtns: NodeListOf<HTMLElement>) {
     //
     (async () => {
       let bmBtnWithFrame = await createBmBtnWithFrame(likeBtnWFrame);
-      let postButtons = RsOk<Node>(likeBtnWFrame.parentNode);
+      let postButtons = RsOk<Element>(likeBtnWFrame.parentNode);
+      if (postButtons.classList.contains("bd")) {
+        err("Bookmark button already exist! Skipping ...");
+        return;
+      }
+      postButtons.classList.add("bd");
       RsOk<Node>(
         postButtons.insertBefore(bmBtnWithFrame, likeBtnWFrame.nextSibling),
       );

@@ -353,8 +353,6 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
           err(e);
         }
         log(`Found stored embed for ${atUri}`);
-        log(embedData);
-
         let atUriSplit = atUri.split("/");
         let postId = atUriSplit[atUriSplit.length - 1];
         let profileUrl = `/profile/${embedData.user.handle.replace("@", "")}`;
@@ -425,29 +423,33 @@ export function createBmPostItem(atUri: string, postItemRef: Node) {
           if (embedDiv.children.length == 2) {
             let descDiv = RsOk<Element>(embedDiv.lastChild);
             if (descDiv.children.length == 3) {
-              let first = descDiv.children[0];
-              let second = descDiv.children[1];
-              let third = descDiv.children[2];
+              let embedUrlTitle = descDiv.children[0].innerHTML;
+              let embedTitle = descDiv.children[1].innerHTML;
+              let embedDesc = descDiv.children[2].innerHTML;
 
-              let newFirst = document.createElement("div");
-              newFirst.style.fontSize = "0.5em";
-              newFirst.innerHTML = first.innerHTML;
+              let titleDescDiv = document.createElement("div");
+              let innerTitle = document.createElement("div");
+              innerTitle.style.fontWeight = "600";
+              innerTitle.innerText = embedTitle;
+              let innerDesc = document.createElement("div");
+              innerDesc.style.fontSize = "87.5%";
+              innerDesc.innerText = embedDesc;
 
-              let newSecond = document.createElement("div");
-              newSecond.style.fontWeight = "600";
-              newSecond.innerHTML = second.innerHTML;
-
-              let newThird = document.createElement("div");
-              newFirst.style.fontSize = "0.5em";
-              newThird.innerHTML = third.innerHTML;
+              titleDescDiv.appendChild(innerTitle);
+              titleDescDiv.appendChild(innerDesc);
 
               let sepDiv = document.createElement("div");
               sepDiv.style.border = borderStyle;
+              sepDiv.style.marginTop = "4px";
+              sepDiv.style.marginBottom = "4px";
 
-              descDiv.replaceChild(newSecond, first);
-              descDiv.replaceChild(newThird, second);
-              descDiv.replaceChild(newFirst, third);
-              descDiv.insertBefore(sepDiv, newFirst);
+              let urlTitleDiv = document.createElement("div");
+              urlTitleDiv.innerHTML = embedUrlTitle;
+              urlTitleDiv.style.fontSize = "60%";
+
+              descDiv.replaceChild(titleDescDiv, descDiv.children[0]);
+              descDiv.replaceChild(sepDiv, descDiv.children[1]);
+              descDiv.replaceChild(urlTitleDiv, descDiv.children[2]);
             }
           }
           newPostInnerContent.appendChild(embedDiv);
