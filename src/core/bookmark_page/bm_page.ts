@@ -82,6 +82,7 @@ function handleLikeBtn(likeBtn: HTMLElement) {
       let take = 5;
 
       let lastScroll = new Date();
+      let taking = false;
       let done = false;
 
       function insertTakenBookmarks() {
@@ -104,13 +105,21 @@ function handleLikeBtn(likeBtn: HTMLElement) {
         if (count < length) {
           let progress = getScrollProgress();
           log(progress);
-          if (progress > 0.85) {
+          if (progress > 0.75) {
             let newLastScroll = new Date();
             let duration = newLastScroll.getSeconds() - lastScroll.getSeconds();
             lastScroll = newLastScroll;
-            if (duration > 2.5) {
-              log(`Take at ${count}, ${length}`);
+            if (duration > 2) {
               insertTakenBookmarks();
+            } else {
+              if (!taking) {
+                taking = true;
+                log(`Take at ${count}, ${length}`);
+                setTimeout(() => {
+                  insertTakenBookmarks();
+                  taking = false;
+                }, 2000);
+              }
             }
           }
         } else {

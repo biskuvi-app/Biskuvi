@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "biskuvi",
-  "version": "1.0",
+  "version": "0.1",
   "description": "Tools and custom features for Bluesky website, bsky.app",
   "icons": {
     "16": "assets/icon/icon-16.png",
