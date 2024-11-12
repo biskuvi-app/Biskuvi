@@ -19,12 +19,12 @@ Due to (considerably high) demands of getting bookmarks as a feature, it is firs
 ## Features
 
 Current features:
-- bookmark posts
+ - bookmark posts
 
 Incoming features:
-- mute user from a post  
-- block user from a post  
-- host a bookmark feed server
+ - mute user from a post  
+ - block user from a post  
+ - host a bookmark feed server
 
 ## Downloading and Installing
 
@@ -39,7 +39,7 @@ You may download the extension and install it manually after enabling "Developme
 
 [Bun](https://bun.sh) v1.1.33+ (or any tool that is compatible with package.json)
 
-### 1 - Install dependencies:  
+### 1 - Install dependencies  
 
 After installing the requirement(s), run this command on the repo folder:    
 
@@ -58,7 +58,7 @@ bun run dev
 The main js file is saved in `./src`  
 
 
-### 3 - Load extension on Firefox / Chromium based browser:  
+### 3 - Load extension on Firefox / Chromium-based browser  
 
 1 - Open the browser's "Extensions" page (e.g.: chrome://extensions)  
 2 - Toggle "Development Mode" (currently at top right of the "[Extensions](chrome://extensions)" page)  
@@ -66,7 +66,7 @@ The main js file is saved in `./src`
 4 - Make sure the process to watch and transpile the code (`bun run dev`) is still running.  
 5 - After each changes onto the code, click "reload" button for the extension on the "[Extensions](chrome://extensions)" page.  
 
-## Packing extension  
+### 4- Packing extension  
 
 Run the following command:
 ```bash
@@ -75,11 +75,16 @@ bun run pack
 
 All the files required to get the extension to work can be found in `./pack/biskuvi`
 
-## Contributions
+## Contributions  
 
 We are looking for contributors. ~~Tbh, I do not enjoy web devving but I think this needs to exist~~
 Possible future projects, perhaps forking [social-app](https://github.com/bluesky-social/social-app) to add features.
 
 Contact us on:
+
  - [Bluesky API touchers Discord server](https://discord.gg/Hg7hW5uK)
  - [Biskuvi official account on Bluesky](https://bsky.app/profile/biskuvi-app.bsky.social)
+
+## Credits
+
+ - Icon credit: Aranagraphics at Flaticon
